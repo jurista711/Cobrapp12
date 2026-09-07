@@ -28,59 +28,77 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Configurar Android SDK 36
+      - name: Instalar Android SDK 36
         run: |
           export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
           export ANDROID_HOME=/usr/local/lib/android/sdk
-
           SDKMANAGER="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
-
           echo "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
           echo "$ANDROID_SDK_ROOT/platform-tools" >> "$GITHUB_PATH"
-
           yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" "platforms;android-36" "build-tools;36.0.0"
 
-          "$SDKMANAGER" \
-            "platforms;android-36" \
-            "build-tools;36.0.0"
-
-      - name: Instalar dependências
+      - name: Instalar dependências Flutter
         run: flutter pub get
 
-      - name: Forçar compileSdk 36 no app e nos plugins
+      - name: Aplicar todas as correções (compileSdk 36 + Desugaring)
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import re
 
-          # Corrige o arquivo principal do app
-          for gradle in Path("android/app").glob("build.gradle*"):
-              text = gradle.read_text()
-              text = re.sub(r'compileSdk\s*[= ]*\d+', 'compileSdk = 36', text)
-              text = re.sub(r'compileSdkVersion\s*[= ]*\d+', 'compileSdkVersion = 36', text)
-              gradle.write_text(text)
-              print(f"✅ Corrigido: {gradle}")
+          # === CORRIGE android/app/build.gradle ===
+          gradle = Path("android/app/build.gradle")
+          if gradle.exists():
+              txt = gradle.read_text()
 
-          # Corrige todos os plugins baixados
+              # 1. Muda compileSdk para 36
+              txt = re.sub(r'compileSdk\s*\d+', 'compileSdk 36', txt)
+              txt = re.sub(r'compileSdkVersion\s*\d+', 'compileSdkVersion 36', txt)
+
+              # 2. Adiciona compileOptions com Desugaring
+              if "coreLibraryDesugaringEnabled" not in txt:
+                  txt = re.sub(
+                      r'(android\s*\{)',
+                      r'''\1
+    compileOptions {
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }''',
+                      txt
+                  )
+
+              # 3. Adiciona a dependência do Desugaring
+              if "desugar_jdk_libs" not in txt:
+                  txt += '''
+
+dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
+}
+'''
+              gradle.write_text(txt)
+              print("✅ android/app/build.gradle → corrigido!")
+
+          # === CORRIGE TODOS OS PLUGINS ===
           root = Path.home() / ".pub-cache" / "hosted" / "pub.dev"
           if root.exists():
-              for gradle in root.glob("*/android/**/*.gradle*"):
+              for f in root.glob("*/android/**/*.gradle"):
                   try:
-                      text = gradle.read_text()
-                      new_text = re.sub(r'compileSdk\s*[= ]*\d+', 'compileSdk = 36', text)
-                      new_text = re.sub(r'compileSdkVersion\s*[= ]*\d+', 'compileSdkVersion = 36', new_text)
-                      if new_text != text:
-                          gradle.write_text(new_text)
-                          print(f"✅ Plugin corrigido: {gradle}")
-                  except:
-                      pass
-          print("✅ TODOS os arquivos configurados com compileSdk = 36")
+                      t = f.read_text()
+                      tn = re.sub(r'compileSdk\s*\d+', 'compileSdk 36', t)
+                      tn = re.sub(r'compileSdkVersion\s*\d+', 'compileSdkVersion 36', tn)
+                      if tn != t:
+                          f.write_text(tn)
+                          print(f"✅ Plugin: {f.name}")
+                  except: pass
+          print("\n🎉 TODAS AS CORREÇÕES APLICADAS COM SUCESSO!")
           PY
 
-      - name: Analisar projeto
+      - name: Verificar código
         run: flutter analyze --no-fatal-infos || true
 
-      - name: Gerar APK
+      - name: COMPILAR APK
         run: flutter build apk --release
 
       - name: Salvar APK pronto
