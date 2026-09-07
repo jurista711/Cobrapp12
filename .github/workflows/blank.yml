@@ -28,30 +28,72 @@ jobs:
           channel: stable
           cache: true
 
-            - name: Corrigir desugaring Android
+      - name: Corrigir desugaring Android
+        shell: bash
         run: |
           python3 - <<'PY'
           from pathlib import Path
 
           path = Path("android/app/build.gradle.kts")
+
+          if not path.exists():
+              raise SystemExit("ERRO: android/app/build.gradle.kts não encontrado")
+
           text = path.read_text()
 
+          # Habilita Core Library Desugaring
           if "isCoreLibraryDesugaringEnabled = true" not in text:
-              text = text.replace(
+              marker = "compileOptions {"
+
+              if marker not in text:
+                  raise SystemExit("ERRO: bloco compileOptions não encontrado")
+
+              start = text.index(marker)
+              end = text.index("}", start)
+
+              block = text[start:end]
+
+              if "targetCompatibility" not in block:
+                  raise SystemExit(
+                      "ERRO: targetCompatibility não encontrado no compileOptions"
+                  )
+
+              block = block.replace(
                   "targetCompatibility = JavaVersion.VERSION_17",
-                  "targetCompatibility = JavaVersion.VERSION_17\n        isCoreLibraryDesugaringEnabled = true",
+                  "targetCompatibility = JavaVersion.VERSION_17\n"
+                  "        isCoreLibraryDesugaringEnabled = true",
                   1
               )
 
-          if "coreLibraryDesugaring(\"com.android.tools:desugar_jdk_libs:" not in text:
+              text = text[:start] + block + text[end:]
+
+          # Adiciona a biblioteca necessária
+          dependency = (
+              'coreLibraryDesugaring('
+              '"com.android.tools:desugar_jdk_libs:2.1.5"'
+              ')'
+          )
+
+          if dependency not in text:
+              marker = "kotlin {"
+
+              if marker not in text:
+                  raise SystemExit("ERRO: bloco kotlin não encontrado")
+
               text = text.replace(
-                  "kotlin {",
-                  'dependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")\n}\n\nkotlin {',
+                  marker,
+                  'dependencies {\n'
+                  '    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")\n'
+                  '}\n\n'
+                  'kotlin {',
                   1
               )
 
           path.write_text(text)
-          print("Desugaring configurado com sucesso.")
+
+          print("====================================")
+          print("DESUGARING CONFIGURADO COM SUCESSO")
+          print("====================================")
           PY
 
       - name: Instalar dependências
