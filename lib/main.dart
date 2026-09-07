@@ -14,6 +14,7 @@ import 'core/supabase_config.dart';
 import 'data/auth_repository.dart';
 import 'data/cobrapp_repository.dart';
 import 'calculator_page.dart';
+import 'portfolio_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -264,6 +265,7 @@ class _HomePageState extends State<HomePage> {
       case 8: return const ReportsPage();
       case 9: return const CalculatorPage();
       case 10: return const SettingsPage();
+      case 11: return const PortfolioPage();
       default: return const DashboardPage();
     }
   }
@@ -306,6 +308,7 @@ class _HomePageState extends State<HomePage> {
           NavigationDrawerDestination(icon: Icon(Icons.receipt_long_outlined), selectedIcon: Icon(Icons.receipt_long), label: Text('Recibos')),
           NavigationDrawerDestination(icon: Icon(Icons.route_outlined), selectedIcon: Icon(Icons.route), label: Text('Rotas')),
           NavigationDrawerDestination(icon: Icon(Icons.analytics_outlined), selectedIcon: Icon(Icons.analytics), label: Text('Relatórios')),
+          NavigationDrawerDestination(icon: Icon(Icons.account_balance_outlined), selectedIcon: Icon(Icons.account_balance), label: Text('Gestão da Carteira')),
           NavigationDrawerDestination(icon: Icon(Icons.calculate_outlined), selectedIcon: Icon(Icons.calculate), label: Text('Calculadora')),
           NavigationDrawerDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: Text('Configurações')),
         ],
