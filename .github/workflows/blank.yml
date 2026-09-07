@@ -1,4 +1,4 @@
-name: CobrApp Android
+name: CobrApp Build APK
 
 on:
   push:
@@ -8,27 +8,27 @@ on:
 
 jobs:
   build:
-    name: Build APK
+    name: Gerar APK
     runs-on: ubuntu-latest
 
     steps:
-      - name: Baixar código
+      - name: 📥 Baixar código
         uses: actions/checkout@v4
 
-      - name: Configurar Java 17
+      - name: ☕ Configurar Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Configurar Flutter
+      - name: 🐦 Configurar Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.44.9'
           channel: stable
           cache: true
 
-      - name: Instalar Android SDK 36
+      - name: 📱 Instalar Android SDK 36
         run: |
           export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
           export ANDROID_HOME=/usr/local/lib/android/sdk
@@ -38,25 +38,25 @@ jobs:
           yes | "$SDKMANAGER" --licenses > /dev/null || true
           "$SDKMANAGER" "platforms;android-36" "build-tools;36.0.0"
 
-      - name: Instalar dependências Flutter
+      - name: 📦 Instalar dependências
         run: flutter pub get
 
-      - name: Aplicar todas as correções (compileSdk 36 + Desugaring)
+      - name: 🔧 Aplicar correções — compileSdk 36 + Desugaring
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import re
 
-          # === CORRIGE android/app/build.gradle ===
+          # === CORRIGE O ARQUIVO PRINCIPAL ===
           gradle = Path("android/app/build.gradle")
           if gradle.exists():
               txt = gradle.read_text()
 
-              # 1. Muda compileSdk para 36
+              # Muda compileSdk para 36
               txt = re.sub(r'compileSdk\s*\d+', 'compileSdk 36', txt)
               txt = re.sub(r'compileSdkVersion\s*\d+', 'compileSdkVersion 36', txt)
 
-              # 2. Adiciona compileOptions com Desugaring
+              # Adiciona Desugaring se não existir
               if "coreLibraryDesugaringEnabled" not in txt:
                   txt = re.sub(
                       r'(android\s*\{)',
@@ -69,7 +69,7 @@ jobs:
                       txt
                   )
 
-              # 3. Adiciona a dependência do Desugaring
+              # Adiciona dependência do Desugaring
               if "desugar_jdk_libs" not in txt:
                   txt += '''
 
@@ -78,7 +78,7 @@ dependencies {
 }
 '''
               gradle.write_text(txt)
-              print("✅ android/app/build.gradle → corrigido!")
+              print("✅ android/app/build.gradle → CORRIGIDO")
 
           # === CORRIGE TODOS OS PLUGINS ===
           root = Path.home() / ".pub-cache" / "hosted" / "pub.dev"
@@ -90,18 +90,19 @@ dependencies {
                       tn = re.sub(r'compileSdkVersion\s*\d+', 'compileSdkVersion 36', tn)
                       if tn != t:
                           f.write_text(tn)
-                          print(f"✅ Plugin: {f.name}")
-                  except: pass
-          print("\n🎉 TODAS AS CORREÇÕES APLICADAS COM SUCESSO!")
+                          print(f"✅ Plugin corrigido: {f.parent.name}")
+                  except:
+                      pass
+          print("\n🎉 TODAS AS CORREÇÕES APLICADAS!")
           PY
 
-      - name: Verificar código
+      - name: 🔍 Verificar código
         run: flutter analyze --no-fatal-infos || true
 
-      - name: COMPILAR APK
+      - name: 🏗️ COMPILAR APK
         run: flutter build apk --release
 
-      - name: Salvar APK pronto
+      - name: 📦 Salvar APK pronto
         uses: actions/upload-artifact@v4
         with:
           name: CobrApp-APK
