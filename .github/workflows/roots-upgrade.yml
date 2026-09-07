@@ -27,6 +27,8 @@ jobs:
 
           if "import 'calculator_page.dart';" not in s:
               s = s.replace("import 'data/cobrapp_repository.dart';", "import 'data/cobrapp_repository.dart';\nimport 'calculator_page.dart';")
+          if "import 'portfolio_page.dart';" not in s:
+              s = s.replace("import 'calculator_page.dart';", "import 'calculator_page.dart';\nimport 'portfolio_page.dart';")
 
           s = s.replace("title: 'CobrApp',", "title: 'Roots Cobrança',", 1)
           s = s.replace("colorSchemeSeed: const Color(0xFF16A085),", "colorSchemeSeed: const Color(0xFF7C3AED),", 1)
@@ -60,6 +62,7 @@ jobs:
                 case 8: return const ReportsPage();
                 case 9: return const CalculatorPage();
                 case 10: return const SettingsPage();
+                case 11: return const PortfolioPage();
                 default: return const DashboardPage();
               }
             }
@@ -102,6 +105,7 @@ jobs:
                     NavigationDrawerDestination(icon: Icon(Icons.receipt_long_outlined), selectedIcon: Icon(Icons.receipt_long), label: Text('Recibos')),
                     NavigationDrawerDestination(icon: Icon(Icons.route_outlined), selectedIcon: Icon(Icons.route), label: Text('Rotas')),
                     NavigationDrawerDestination(icon: Icon(Icons.analytics_outlined), selectedIcon: Icon(Icons.analytics), label: Text('Relatórios')),
+                    NavigationDrawerDestination(icon: Icon(Icons.account_balance_outlined), selectedIcon: Icon(Icons.account_balance), label: Text('Gestão da Carteira')),
                     NavigationDrawerDestination(icon: Icon(Icons.calculate_outlined), selectedIcon: Icon(Icons.calculate), label: Text('Calculadora')),
                     NavigationDrawerDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: Text('Configurações')),
                   ],
