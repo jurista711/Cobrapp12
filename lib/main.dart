@@ -13,6 +13,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'core/supabase_config.dart';
 import 'data/auth_repository.dart';
 import 'data/cobrapp_repository.dart';
+import 'calculator_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -106,11 +107,11 @@ class CobrApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'CobrApp',
+      title: 'Roots Cobrança',
       theme: ThemeData(
         useMaterial3: true,
         fontFamily: 'Nunito',
-        colorSchemeSeed: const Color(0xFF16A085),
+        colorSchemeSeed: const Color(0xFF7C3AED),
       ),
       home: const AuthGate(),
     );
@@ -187,7 +188,7 @@ class _LoginPageState extends State<LoginPage> {
                   const Icon(Icons.account_balance_wallet_rounded, size: 76),
                   const SizedBox(height: 12),
                   const Text(
-                    'CobrApp',
+                    'Roots Cobrança',
                     style: TextStyle(fontSize: 32, fontWeight: FontWeight.w800),
                   ),
                   const SizedBox(height: 8),
@@ -253,47 +254,77 @@ class _HomePageState extends State<HomePage> {
 
   Widget page() {
     switch (tab) {
-      case 1:
-        return const CustomersPage();
-      case 2:
-        return const LoansPage();
-      case 3:
-        return const PaymentsPage();
-      case 4:
-        return const CollectionPage();
-      case 5:
-        return const ReceiptsPage();
-      case 6:
-        return const CashPage();
-      case 7:
-        return const RoutesPage();
-      case 8:
-        return const ReportsPage();
-      case 9:
-        return const SettingsPage();
-      default:
-        return const DashboardPage();
+      case 1: return const CustomersPage();
+      case 2: return const LoansPage();
+      case 3: return const CollectionPage();
+      case 4: return const CashPage();
+      case 5: return const PaymentsPage();
+      case 6: return const ReceiptsPage();
+      case 7: return const RoutesPage();
+      case 8: return const ReportsPage();
+      case 9: return const CalculatorPage();
+      case 10: return const SettingsPage();
+      default: return const DashboardPage();
     }
+  }
+
+  void select(int index) {
+    Navigator.of(context).pop();
+    setState(() => tab = index);
   }
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
+      drawer: NavigationDrawer(
+        selectedIndex: tab,
+        onDestinationSelected: select,
+        header: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 28, 24, 18),
+          child: Row(children: [
+            Container(
+              width: 48, height: 48,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: const LinearGradient(colors: [Color(0xFF7C3AED), Color(0xFFA855F7)]),
+              ),
+              child: const Icon(Icons.account_balance_wallet_rounded, color: Colors.white),
+            ),
+            const SizedBox(width: 14),
+            const Expanded(child: Text('Roots Cobrança', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900))),
+          ]),
+        ),
+        children: const [
+          NavigationDrawerDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: Text('Início')),
+          NavigationDrawerDestination(icon: Icon(Icons.people_outline), selectedIcon: Icon(Icons.people), label: Text('Clientes')),
+          NavigationDrawerDestination(icon: Icon(Icons.account_balance_wallet_outlined), selectedIcon: Icon(Icons.account_balance_wallet), label: Text('Empréstimos')),
+          NavigationDrawerDestination(icon: Icon(Icons.event_available_outlined), selectedIcon: Icon(Icons.event_available), label: Text('Cobranças')),
+          NavigationDrawerDestination(icon: Icon(Icons.account_balance_outlined), selectedIcon: Icon(Icons.account_balance), label: Text('Caixa')),
+          Divider(indent: 16, endIndent: 16),
+          NavigationDrawerDestination(icon: Icon(Icons.payments_outlined), selectedIcon: Icon(Icons.payments), label: Text('Pagamentos')),
+          NavigationDrawerDestination(icon: Icon(Icons.receipt_long_outlined), selectedIcon: Icon(Icons.receipt_long), label: Text('Recibos')),
+          NavigationDrawerDestination(icon: Icon(Icons.route_outlined), selectedIcon: Icon(Icons.route), label: Text('Rotas')),
+          NavigationDrawerDestination(icon: Icon(Icons.analytics_outlined), selectedIcon: Icon(Icons.analytics), label: Text('Relatórios')),
+          NavigationDrawerDestination(icon: Icon(Icons.calculate_outlined), selectedIcon: Icon(Icons.calculate), label: Text('Calculadora')),
+          NavigationDrawerDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: Text('Configurações')),
+        ],
+      ),
+      appBar: AppBar(
+        title: const Text('Roots Cobrança', style: TextStyle(fontWeight: FontWeight.w900)),
+        actions: [IconButton(tooltip: 'Sair', onPressed: () => CobrAppRepository().db.auth.signOut(), icon: const Icon(Icons.logout))],
+      ),
       body: SafeArea(child: page()),
       bottomNavigationBar: NavigationBar(
-        selectedIndex: tab,
+        selectedIndex: tab > 4 ? 0 : tab,
         onDestinationSelected: (index) => setState(() => tab = index),
+        indicatorColor: cs.primaryContainer,
         destinations: const [
           NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: 'Início'),
           NavigationDestination(icon: Icon(Icons.people_outline), selectedIcon: Icon(Icons.people), label: 'Clientes'),
-          NavigationDestination(icon: Icon(Icons.receipt_long_outlined), selectedIcon: Icon(Icons.receipt_long), label: 'Empréstimos'),
-          NavigationDestination(icon: Icon(Icons.payments_outlined), selectedIcon: Icon(Icons.payments), label: 'Pagamentos'),
-          NavigationDestination(icon: Icon(Icons.event_note_outlined), selectedIcon: Icon(Icons.event_note), label: 'Cobranças'),
-          NavigationDestination(icon: Icon(Icons.receipt_outlined), selectedIcon: Icon(Icons.receipt), label: 'Recibos'),
+          NavigationDestination(icon: Icon(Icons.account_balance_wallet_outlined), selectedIcon: Icon(Icons.account_balance_wallet), label: 'Empréstimos'),
+          NavigationDestination(icon: Icon(Icons.event_available_outlined), selectedIcon: Icon(Icons.event_available), label: 'Cobranças'),
           NavigationDestination(icon: Icon(Icons.account_balance_outlined), selectedIcon: Icon(Icons.account_balance), label: 'Caixa'),
-          NavigationDestination(icon: Icon(Icons.route_outlined), selectedIcon: Icon(Icons.route), label: 'Rotas'),
-          NavigationDestination(icon: Icon(Icons.analytics_outlined), selectedIcon: Icon(Icons.analytics), label: 'Relatórios'),
-          NavigationDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: 'Configurações'),
         ],
       ),
     );
@@ -456,7 +487,7 @@ class _ReportsPageState extends State<ReportsPage> {
     document.addPage(
       pw.MultiPage(
         build: (_) => [
-          pw.Header(level: 0, child: pw.Text('CobrApp - Relatório da carteira')),
+          pw.Header(level: 0, child: pw.Text('Roots Cobrança - Relatório da carteira')),
           pw.Text('Gerado em: ${DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())}'),
           if (from != null && to != null) pw.Text('Período: ${fmtDate(from!)} a ${fmtDate(to!)}'),
           pw.SizedBox(height: 12),
@@ -481,7 +512,7 @@ class _ReportsPageState extends State<ReportsPage> {
         ],
       ),
     );
-    await Printing.sharePdf(bytes: await document.save(), filename: 'cobrapp_relatorio.pdf');
+    await Printing.sharePdf(bytes: await document.save(), filename: 'roots_cobranca_relatorio.pdf');
   }
 
   Future<void> exportCsv() async {
@@ -503,7 +534,7 @@ class _ReportsPageState extends State<ReportsPage> {
     final file = File('${dir.path}/cobrapp_carteira.csv');
     await file.writeAsBytes(bytes, flush: true);
     await SharePlus.instance.share(
-      ShareParams(files: [XFile(file.path)], text: 'Carteira CobrApp'),
+      ShareParams(files: [XFile(file.path)], text: 'Carteira Roots Cobrança'),
     );
   }
 
@@ -988,7 +1019,7 @@ class _ReceiptsPageState extends State<ReceiptsPage> {
 
   Future<void> shareReceipt(Map<String, dynamic> receipt) async {
     final text = [
-      'CobrApp — Recibo',
+      'Roots Cobrança — Recibo',
       'Recibo: ${receipt['receipt_number'] ?? receipt['id'] ?? '-'}',
       'Cliente: ${relationMap(receipt['cobrapp_customers'])?['name'] ?? receipt['customer_name'] ?? '-'}',
       'Valor: ${money(receipt['amount'])}',
