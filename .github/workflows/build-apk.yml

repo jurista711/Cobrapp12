@@ -1,4 +1,4 @@
-name: Build APK
+name: Build CobrApp APK
 
 on:
   push:
@@ -8,20 +8,20 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Baixar código
-      uses: actions/checkout@v4
+      - name: Baixar código
+        uses: actions/checkout@v4
 
-    - name: Configurar Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.24.0'
-        channel: 'stable'
+      - name: Configurar Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
 
-    - name: Corrigir build.gradle
-      run: |
-        cat > android/app/build.gradle << 'EOF'
+      - name: Corrigir configuração Android
+        run: |
+          mkdir -p android/app
+          cat > android/app/build.gradle << 'EOF'
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -72,14 +72,14 @@ dependencies {
 }
 EOF
 
-    - name: Instalar dependências
-      run: flutter pub get
+      - name: Instalar dependências
+        run: flutter pub get
 
-    - name: Compilar APK
-      run: flutter build apk --release
+      - name: Compilar o APK
+        run: flutter build apk --release
 
-    - name: Salvar APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: CobrApp-APK
-        path: build/app/outputs/flutter-apk/app-release.apk
+      - name: Salvar APK pronto
+        uses: actions/upload-artifact@v4
+        with:
+          name: CobrApp-APK
+          path: build/app/outputs/flutter-apk/app-release.apk
