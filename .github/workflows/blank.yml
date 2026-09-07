@@ -28,6 +28,46 @@ jobs:
           channel: stable
           cache: true
 
+      - name: Corrigir desugaring Android
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("android/app/build.gradle.kts")
+          text = path.read_text()
+
+          old = """    compileOptions {
+              sourceCompatibility = JavaVersion.VERSION_17
+              targetCompatibility = JavaVersion.VERSION_17
+          }"""
+
+          new = """    compileOptions {
+              sourceCompatibility = JavaVersion.VERSION_17
+              targetCompatibility = JavaVersion.VERSION_17
+              isCoreLibraryDesugaringEnabled = true
+          }"""
+
+          if "isCoreLibraryDesugaringEnabled = true" not in text:
+              if old not in text:
+                  raise SystemExit("compileOptions não encontrado")
+              text = text.replace(old, new, 1)
+
+          dependency = """dependencies {
+              coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+          }
+
+          """
+
+          if "coreLibraryDesugaring(\"com.android.tools:desugar_jdk_libs:2.1.5\")" not in text:
+              marker = "kotlin {"
+              if marker not in text:
+                  raise SystemExit("bloco kotlin não encontrado")
+              text = text.replace(marker, dependency + marker, 1)
+
+          path.write_text(text)
+          print("Desugaring configurado com sucesso.")
+          PY
+
       - name: Instalar dependências
         run: flutter pub get
 
