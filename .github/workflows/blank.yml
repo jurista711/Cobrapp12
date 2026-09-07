@@ -40,71 +40,106 @@ jobs:
 
           yes | "$SDKMANAGER" --licenses > /dev/null || true
 
-          "$SDKMANAGER" "platforms;android-36" "build-tools;36.0.0"
+          "$SDKMANAGER" \
+            "platforms;android-36" \
+            "build-tools;36.0.0"
 
-      - name: Forçar compileSdk 36 e desugaring
+      - name: Instalar dependências
+        run: flutter pub get
+
+      - name: Forçar compileSdk 36
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import re
 
-          path = Path("android/app/build.gradle.kts")
+          root = Path.home() / ".pub-cache" / "hosted" / "pub.dev"
 
-          if not path.exists():
-              raise SystemExit("ERRO: build.gradle.kts não encontrado")
+          # Corrige o app
+          app = Path("android/app/build.gradle.kts")
 
-          text = path.read_text()
+          if app.exists():
+              text = app.read_text()
 
-          # Força qualquer configuração compileSdk para 36.
-          text = re.sub(
-              r'compileSdk\s*=\s*flutter\.compileSdkVersion',
-              'compileSdk = 36',
-              text
-          )
-
-          text = re.sub(
-              r'compileSdk\s*=\s*\d+',
-              'compileSdk = 36',
-              text
-          )
-
-          # Garante desugaring.
-          if "isCoreLibraryDesugaringEnabled = true" not in text:
-              text = text.replace(
-                  "targetCompatibility = JavaVersion.VERSION_17",
-                  "targetCompatibility = JavaVersion.VERSION_17\n"
-                  "        isCoreLibraryDesugaringEnabled = true",
-                  1
+              text = re.sub(
+                  r'compileSdk\s*=\s*flutter\.compileSdkVersion',
+                  'compileSdk = 36',
+                  text
               )
 
-          dependency = (
-              'coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")'
-          )
-
-          if dependency not in text:
-              text = text.replace(
-                  "kotlin {",
-                  'dependencies {\n'
-                  '    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")\n'
-                  '}\n\n'
-                  'kotlin {',
-                  1
+              text = re.sub(
+                  r'compileSdk\s*=\s*\d+',
+                  'compileSdk = 36',
+                  text
               )
 
-          path.write_text(text)
+              if "isCoreLibraryDesugaringEnabled = true" not in text:
+                  text = text.replace(
+                      "targetCompatibility = JavaVersion.VERSION_17",
+                      "targetCompatibility = JavaVersion.VERSION_17\n"
+                      "        isCoreLibraryDesugaringEnabled = true",
+                      1
+                  )
 
-          print("compileSdk configurado para 36")
-          print("desugaring configurado")
+              dependency = (
+                  'coreLibraryDesugaring('
+                  '"com.android.tools:desugar_jdk_libs:2.1.5")'
+              )
+
+              if dependency not in text:
+                  text = text.replace(
+                      "kotlin {",
+                      'dependencies {\n'
+                      '    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")\n'
+                      '}\n\n'
+                      'kotlin {',
+                      1
+                  )
+
+              app.write_text(text)
+
+          # Corrige os plugins Flutter baixados pelo pub.
+          count = 0
+
+          if root.exists():
+              for gradle in root.glob("*/android/build.gradle*"):
+                  try:
+                      text = gradle.read_text()
+
+                      new_text = re.sub(
+                          r'compileSdk\s*=\s*flutter\.compileSdkVersion',
+                          'compileSdk = 36',
+                          text
+                      )
+
+                      new_text = re.sub(
+                          r'compileSdk\s*=\s*\d+',
+                          'compileSdk = 36',
+                          new_text
+                      )
+
+                      if new_text != text:
+                          gradle.write_text(new_text)
+                          count += 1
+                          print(f"Corrigido: {gradle}")
+
+                  except Exception:
+                      pass
+
+          print("====================================")
+          print("APP COMPILE SDK: 36")
+          print(f"PLUGINS CORRIGIDOS: {count}")
+          print("DESUGARING: CONFIGURADO")
+          print("====================================")
           PY
 
-      - name: Conferir compileSdk
+      - name: Conferir configurações
         run: |
-          echo "=== compileSdk encontrado ==="
-          grep -n "compileSdk" android/app/build.gradle.kts
-          echo "============================="
+          echo "=== APP ==="
+          grep -R "compileSdk" android/app/build.gradle.kts || true
 
-      - name: Instalar dependências
-        run: flutter pub get
+          echo "=== PLUGINS ==="
+          grep -R "compileSdk" "$HOME/.pub-cache/hosted/pub.dev/flutter_plugin_android_lifecycle"*"/android/" 2>/dev/null || true
 
       - name: Analisar projeto
         run: flutter analyze --no-fatal-infos || true
