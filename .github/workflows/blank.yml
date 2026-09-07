@@ -28,8 +28,12 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Corrigir desugaring Android
-        shell: bash
+      - name: Instalar Android SDK 36
+        run: |
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Corrigir configuração Android
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -41,21 +45,28 @@ jobs:
 
           text = path.read_text()
 
-          # Habilita Core Library Desugaring
+          # Usar Android API 36 para compilação
+          text = text.replace(
+              "compileSdk = flutter.compileSdkVersion",
+              "compileSdk = 36",
+              1
+          )
+
+          # Core Library Desugaring
           if "isCoreLibraryDesugaringEnabled = true" not in text:
               marker = "compileOptions {"
 
               if marker not in text:
-                  raise SystemExit("ERRO: bloco compileOptions não encontrado")
+                  raise SystemExit("ERRO: compileOptions não encontrado")
 
               start = text.index(marker)
               end = text.index("}", start)
 
               block = text[start:end]
 
-              if "targetCompatibility" not in block:
+              if "targetCompatibility = JavaVersion.VERSION_17" not in block:
                   raise SystemExit(
-                      "ERRO: targetCompatibility não encontrado no compileOptions"
+                      "ERRO: targetCompatibility não encontrado"
                   )
 
               block = block.replace(
@@ -67,7 +78,7 @@ jobs:
 
               text = text[:start] + block + text[end:]
 
-          # Adiciona a biblioteca necessária
+          # Dependência do desugaring
           dependency = (
               'coreLibraryDesugaring('
               '"com.android.tools:desugar_jdk_libs:2.1.5"'
@@ -91,9 +102,10 @@ jobs:
 
           path.write_text(text)
 
-          print("====================================")
-          print("DESUGARING CONFIGURADO COM SUCESSO")
-          print("====================================")
+          print("========================================")
+          print("ANDROID SDK 36 CONFIGURADO")
+          print("CORE LIBRARY DESUGARING CONFIGURADO")
+          print("========================================")
           PY
 
       - name: Instalar dependências
