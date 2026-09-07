@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.cobrapp"
-    compileSdk = 36   // ✅ OBRIGATÓRIO — NÃO MUDA!
+    namespace = "com.cobrapp.cobrapp_supabase"
+    compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.cobrapp"
+        applicationId = "com.cobrapp.cobrapp_supabase"
         minSdk = 21
         targetSdk = 36
         versionCode = flutter.versionCode
@@ -35,5 +35,9 @@ kotlin {
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+}
+
+flutter {
+    source = "../.."
 }
