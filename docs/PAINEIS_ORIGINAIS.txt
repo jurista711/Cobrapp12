@@ -1,0 +1,27 @@
+Arquivos/pacotes lógicos identificados no APK:
+package:cobrapp/data/firebase/firestore_utils.dart
+package:cobrapp/data/firebase/impl_collection_activities.dart
+package:cobrapp/data/firebase/impl_customers.dart
+package:cobrapp/data/firebase/impl_dashboard.dart
+package:cobrapp/data/firebase/impl_document_templates.dart
+package:cobrapp/data/firebase/impl_expense_category.dart
+package:cobrapp/data/firebase/impl_expense_detail.dart
+package:cobrapp/data/firebase/impl_expense_route.dart
+package:cobrapp/data/firebase/impl_file_storage.dart
+package:cobrapp/data/firebase/impl_loans.dart
+package:cobrapp/data/firebase/impl_login.dart
+package:cobrapp/data/firebase/impl_overdue_interests.dart
+package:cobrapp/data/firebase/impl_payments.dart
+package:cobrapp/data/firebase/impl_tags.dart
+package:cobrapp/data/firebase/impl_user.dart
+package:cobrapp/domain/entities/e_customer.dart
+package:cobrapp/domain/entities/e_loan.dart
+package:cobrapp/domain/entities/e_payment.dart
+package:cobrapp/domain/entities/e_interest.dart
+package:cobrapp/domain/entities/e_late_fee.dart
+package:cobrapp/domain/entities/e_expense_category.dart
+package:cobrapp/domain/entities/e_expense_detail.dart
+package:cobrapp/domain/entities/e_expense_route.dart
+package:cobrapp/domain/entities/e_collection_activity.dart
+package:cobrapp/domain/entities/e_document_template.dart
+package:cobrapp/domain/entities/e_tag.dart
