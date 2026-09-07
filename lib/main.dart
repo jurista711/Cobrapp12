@@ -245,14 +245,10 @@ class _LoginPageState extends State<LoginPage> {
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
+  @override State<HomePage> createState() => _HomePageState();
 }
-
 class _HomePageState extends State<HomePage> {
   int tab = 0;
-
   Widget page() {
     switch (tab) {
       case 1: return const CustomersPage();
@@ -265,75 +261,47 @@ class _HomePageState extends State<HomePage> {
       case 8: return const ReportsPage();
       case 9: return const CalculatorPage();
       case 10: return const SettingsPage();
-      case 11: return const PortfolioPage();
       default: return const DashboardPage();
     }
   }
-
-  void select(int index) {
-    Navigator.of(context).pop();
-    setState(() => tab = index);
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  void select(int index) { Navigator.of(context).pop(); setState(() => tab = index); }
+  @override Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Scaffold(
       drawer: NavigationDrawer(
         selectedIndex: tab,
         onDestinationSelected: select,
-        header: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 28, 24, 18),
-          child: Row(children: [
-            Container(
-              width: 48, height: 48,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                gradient: const LinearGradient(colors: [Color(0xFF7C3AED), Color(0xFFA855F7)]),
-              ),
-              child: const Icon(Icons.account_balance_wallet_rounded, color: Colors.white),
-            ),
-            const SizedBox(width: 14),
-            const Expanded(child: Text('Roots Cobrança', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900))),
-          ]),
-        ),
+        header: Padding(padding: const EdgeInsets.fromLTRB(24,28,24,18), child: Row(children: [
+          Container(width:48,height:48,decoration:BoxDecoration(borderRadius:BorderRadius.circular(16),gradient:const LinearGradient(colors:[Color(0xFF7C3AED),Color(0xFFA855F7)])),child:const Icon(Icons.account_balance_wallet_rounded,color:Colors.white)),
+          const SizedBox(width:14), const Expanded(child: Text('Roots Cobrança',style:TextStyle(fontSize:20,fontWeight:FontWeight.w900))),
+        ])),
         children: const [
-          NavigationDrawerDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: Text('Início')),
-          NavigationDrawerDestination(icon: Icon(Icons.people_outline), selectedIcon: Icon(Icons.people), label: Text('Clientes')),
-          NavigationDrawerDestination(icon: Icon(Icons.account_balance_wallet_outlined), selectedIcon: Icon(Icons.account_balance_wallet), label: Text('Empréstimos')),
-          NavigationDrawerDestination(icon: Icon(Icons.event_available_outlined), selectedIcon: Icon(Icons.event_available), label: Text('Cobranças')),
-          NavigationDrawerDestination(icon: Icon(Icons.account_balance_outlined), selectedIcon: Icon(Icons.account_balance), label: Text('Caixa')),
-          Divider(indent: 16, endIndent: 16),
-          NavigationDrawerDestination(icon: Icon(Icons.payments_outlined), selectedIcon: Icon(Icons.payments), label: Text('Pagamentos')),
-          NavigationDrawerDestination(icon: Icon(Icons.receipt_long_outlined), selectedIcon: Icon(Icons.receipt_long), label: Text('Recibos')),
-          NavigationDrawerDestination(icon: Icon(Icons.route_outlined), selectedIcon: Icon(Icons.route), label: Text('Rotas')),
-          NavigationDrawerDestination(icon: Icon(Icons.analytics_outlined), selectedIcon: Icon(Icons.analytics), label: Text('Relatórios')),
-          NavigationDrawerDestination(icon: Icon(Icons.account_balance_outlined), selectedIcon: Icon(Icons.account_balance), label: Text('Gestão da Carteira')),
-          NavigationDrawerDestination(icon: Icon(Icons.calculate_outlined), selectedIcon: Icon(Icons.calculate), label: Text('Calculadora')),
-          NavigationDrawerDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: Text('Configurações')),
+          NavigationDrawerDestination(icon:Icon(Icons.dashboard_outlined),selectedIcon:Icon(Icons.dashboard),label:Text('Início')),
+          NavigationDrawerDestination(icon:Icon(Icons.people_outline),selectedIcon:Icon(Icons.people),label:Text('Clientes')),
+          NavigationDrawerDestination(icon:Icon(Icons.account_balance_wallet_outlined),selectedIcon:Icon(Icons.account_balance_wallet),label:Text('Empréstimos')),
+          NavigationDrawerDestination(icon:Icon(Icons.event_available_outlined),selectedIcon:Icon(Icons.event_available),label:Text('Cobranças')),
+          NavigationDrawerDestination(icon:Icon(Icons.account_balance_outlined),selectedIcon:Icon(Icons.account_balance),label:Text('Caixa')),
+          Divider(indent:16,endIndent:16),
+          NavigationDrawerDestination(icon:Icon(Icons.payments_outlined),selectedIcon:Icon(Icons.payments),label:Text('Pagamentos')),
+          NavigationDrawerDestination(icon:Icon(Icons.receipt_long_outlined),selectedIcon:Icon(Icons.receipt_long),label:Text('Recibos')),
+          NavigationDrawerDestination(icon:Icon(Icons.route_outlined),selectedIcon:Icon(Icons.route),label:Text('Rotas')),
+          NavigationDrawerDestination(icon:Icon(Icons.analytics_outlined),selectedIcon:Icon(Icons.analytics),label:Text('Relatórios')),
+          NavigationDrawerDestination(icon:Icon(Icons.calculate_outlined),selectedIcon:Icon(Icons.calculate),label:Text('Calculadora')),
+          NavigationDrawerDestination(icon:Icon(Icons.settings_outlined),selectedIcon:Icon(Icons.settings),label:Text('Configurações')),
         ],
       ),
-      appBar: AppBar(
-        title: const Text('Roots Cobrança', style: TextStyle(fontWeight: FontWeight.w900)),
-        actions: [IconButton(tooltip: 'Sair', onPressed: () => CobrAppRepository().db.auth.signOut(), icon: const Icon(Icons.logout))],
-      ),
-      body: SafeArea(child: page()),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: tab > 4 ? 0 : tab,
-        onDestinationSelected: (index) => setState(() => tab = index),
-        indicatorColor: cs.primaryContainer,
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: 'Início'),
-          NavigationDestination(icon: Icon(Icons.people_outline), selectedIcon: Icon(Icons.people), label: 'Clientes'),
-          NavigationDestination(icon: Icon(Icons.account_balance_wallet_outlined), selectedIcon: Icon(Icons.account_balance_wallet), label: 'Empréstimos'),
-          NavigationDestination(icon: Icon(Icons.event_available_outlined), selectedIcon: Icon(Icons.event_available), label: 'Cobranças'),
-          NavigationDestination(icon: Icon(Icons.account_balance_outlined), selectedIcon: Icon(Icons.account_balance), label: 'Caixa'),
-        ],
-      ),
+      appBar: AppBar(title:const Text('Roots Cobrança',style:TextStyle(fontWeight:FontWeight.w900)),actions:[IconButton(tooltip:'Sair',onPressed:()=>CobrAppRepository().db.auth.signOut(),icon:const Icon(Icons.logout))]),
+      body:SafeArea(child:page()),
+      bottomNavigationBar:NavigationBar(selectedIndex:tab>4?0:tab,onDestinationSelected:(index)=>setState(()=>tab=index),indicatorColor:cs.primaryContainer,destinations:const [
+        NavigationDestination(icon:Icon(Icons.dashboard_outlined),selectedIcon:Icon(Icons.dashboard),label:'Início'),
+        NavigationDestination(icon:Icon(Icons.people_outline),selectedIcon:Icon(Icons.people),label:'Clientes'),
+        NavigationDestination(icon:Icon(Icons.account_balance_wallet_outlined),selectedIcon:Icon(Icons.account_balance_wallet),label:'Empréstimos'),
+        NavigationDestination(icon:Icon(Icons.event_available_outlined),selectedIcon:Icon(Icons.event_available),label:'Cobranças'),
+        NavigationDestination(icon:Icon(Icons.account_balance_outlined),selectedIcon:Icon(Icons.account_balance),label:'Caixa'),
+      ]),
     );
   }
 }
-
 class StatCard extends StatelessWidget {
   final String label;
   final String value;
