@@ -1,0 +1,245 @@
+name: Aplicar Roots Cobrança
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  upgrade:
+    if: ${{ !contains(github.event.head_commit.message, '[roots-upgrade]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Aplicar identidade Roots Cobrança e calculadora
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          main = Path('lib/main.dart')
+          s = main.read_text()
+
+          if "import 'calculator_page.dart';" not in s:
+              s = s.replace("import 'data/cobrapp_repository.dart';", "import 'data/cobrapp_repository.dart';\nimport 'calculator_page.dart';")
+
+          s = s.replace("title: 'CobrApp',", "title: 'Roots Cobrança',", 1)
+          s = s.replace("colorSchemeSeed: const Color(0xFF16A085),", "colorSchemeSeed: const Color(0xFF7C3AED),", 1)
+          s = s.replace("'CobrApp',", "'Roots Cobrança',", 1)
+          s = s.replace("'Carteira CobrApp'", "'Carteira Roots Cobrança'")
+          s = s.replace("CobrApp - Relatório da carteira", "Roots Cobrança - Relatório da carteira")
+          s = s.replace("cobrapp_relatorio.pdf", "roots_cobranca_relatorio.pdf")
+          s = s.replace("'CobrApp — Recibo'", "'Roots Cobrança — Recibo'")
+
+          old_start = s.index('class HomePage extends StatefulWidget {')
+          old_end = s.index('class StatCard extends StatelessWidget {')
+          home = r'''class HomePage extends StatefulWidget {
+            const HomePage({super.key});
+
+            @override
+            State<HomePage> createState() => _HomePageState();
+          }
+
+          class _HomePageState extends State<HomePage> {
+            int tab = 0;
+
+            Widget page() {
+              switch (tab) {
+                case 1: return const CustomersPage();
+                case 2: return const LoansPage();
+                case 3: return const CollectionPage();
+                case 4: return const CashPage();
+                case 5: return const PaymentsPage();
+                case 6: return const ReceiptsPage();
+                case 7: return const RoutesPage();
+                case 8: return const ReportsPage();
+                case 9: return const CalculatorPage();
+                case 10: return const SettingsPage();
+                default: return const DashboardPage();
+              }
+            }
+
+            void select(int index) {
+              Navigator.of(context).pop();
+              setState(() => tab = index);
+            }
+
+            @override
+            Widget build(BuildContext context) {
+              final cs = Theme.of(context).colorScheme;
+              return Scaffold(
+                drawer: NavigationDrawer(
+                  selectedIndex: tab,
+                  onDestinationSelected: select,
+                  header: Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 28, 24, 18),
+                    child: Row(children: [
+                      Container(
+                        width: 48, height: 48,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          gradient: const LinearGradient(colors: [Color(0xFF7C3AED), Color(0xFFA855F7)]),
+                        ),
+                        child: const Icon(Icons.account_balance_wallet_rounded, color: Colors.white),
+                      ),
+                      const SizedBox(width: 14),
+                      const Expanded(child: Text('Roots Cobrança', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900))),
+                    ]),
+                  ),
+                  children: const [
+                    NavigationDrawerDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: Text('Início')),
+                    NavigationDrawerDestination(icon: Icon(Icons.people_outline), selectedIcon: Icon(Icons.people), label: Text('Clientes')),
+                    NavigationDrawerDestination(icon: Icon(Icons.account_balance_wallet_outlined), selectedIcon: Icon(Icons.account_balance_wallet), label: Text('Empréstimos')),
+                    NavigationDrawerDestination(icon: Icon(Icons.event_available_outlined), selectedIcon: Icon(Icons.event_available), label: Text('Cobranças')),
+                    NavigationDrawerDestination(icon: Icon(Icons.account_balance_outlined), selectedIcon: Icon(Icons.account_balance), label: Text('Caixa')),
+                    Divider(indent: 16, endIndent: 16),
+                    NavigationDrawerDestination(icon: Icon(Icons.payments_outlined), selectedIcon: Icon(Icons.payments), label: Text('Pagamentos')),
+                    NavigationDrawerDestination(icon: Icon(Icons.receipt_long_outlined), selectedIcon: Icon(Icons.receipt_long), label: Text('Recibos')),
+                    NavigationDrawerDestination(icon: Icon(Icons.route_outlined), selectedIcon: Icon(Icons.route), label: Text('Rotas')),
+                    NavigationDrawerDestination(icon: Icon(Icons.analytics_outlined), selectedIcon: Icon(Icons.analytics), label: Text('Relatórios')),
+                    NavigationDrawerDestination(icon: Icon(Icons.calculate_outlined), selectedIcon: Icon(Icons.calculate), label: Text('Calculadora')),
+                    NavigationDrawerDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: Text('Configurações')),
+                  ],
+                ),
+                appBar: AppBar(
+                  title: const Text('Roots Cobrança', style: TextStyle(fontWeight: FontWeight.w900)),
+                  actions: [IconButton(tooltip: 'Sair', onPressed: () => CobrAppRepository().db.auth.signOut(), icon: const Icon(Icons.logout))],
+                ),
+                body: SafeArea(child: page()),
+                bottomNavigationBar: NavigationBar(
+                  selectedIndex: tab > 4 ? 0 : tab,
+                  onDestinationSelected: (index) => setState(() => tab = index),
+                  indicatorColor: cs.primaryContainer,
+                  destinations: const [
+                    NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: 'Início'),
+                    NavigationDestination(icon: Icon(Icons.people_outline), selectedIcon: Icon(Icons.people), label: 'Clientes'),
+                    NavigationDestination(icon: Icon(Icons.account_balance_wallet_outlined), selectedIcon: Icon(Icons.account_balance_wallet), label: 'Empréstimos'),
+                    NavigationDestination(icon: Icon(Icons.event_available_outlined), selectedIcon: Icon(Icons.event_available), label: 'Cobranças'),
+                    NavigationDestination(icon: Icon(Icons.account_balance_outlined), selectedIcon: Icon(Icons.account_balance), label: 'Caixa'),
+                  ],
+                ),
+              );
+            }
+          }
+
+          '''
+          s = s[:old_start] + home + s[old_end:]
+
+          old_migration = '''                  const SizedBox(height: 22),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(18),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Migração Supabase', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 8),
+                          Text('Autenticação, banco de dados e armazenamento estão preparados para substituir o Firebase.', style: Theme.of(context).textTheme.bodyMedium),
+                        ],
+                      ),
+                    ),
+                  ),'''
+          s = s.replace(old_migration, '                  const SizedBox(height: 22),')
+
+          main.write_text(s)
+
+          calc = Path('lib/calculator_page.dart')
+          if not calc.exists():
+              calc.write_text(r'''import 'package:flutter/material.dart';
+          import 'package:intl/intl.dart';
+
+          class CalculatorPage extends StatefulWidget {
+            const CalculatorPage({super.key});
+            @override
+            State<CalculatorPage> createState() => _CalculatorPageState();
+          }
+
+          class _CalculatorPageState extends State<CalculatorPage> {
+            final principal = TextEditingController();
+            final rate = TextEditingController(text: '20');
+            final installments = TextEditingController(text: '4');
+            String interestType = 'fixed';
+            String paymentType = 'installments';
+            double? total, interest, installmentValue;
+
+            String money(double v) => NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$').format(v);
+            double power(double b, int n) { var r = 1.0; for (var i = 0; i < n; i++) r *= b; return r; }
+
+            void calculate() {
+              final p = double.tryParse(principal.text.replaceAll(',', '.'));
+              final r = double.tryParse(rate.text.replaceAll(',', '.'));
+              final n = int.tryParse(installments.text);
+              if (p == null || p <= 0 || r == null || r < 0 || n == null || n <= 0) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Informe valores válidos para calcular.')));
+                return;
+              }
+              final t = interestType == 'compound'
+                  ? p * power(1 + r / 100, n)
+                  : paymentType == 'single' ? p * (1 + (r / 100) * n) : p * (1 + r / 100);
+              setState(() { total = t; interest = t - p; installmentValue = paymentType == 'single' ? t : t / n; });
+            }
+
+            @override
+            void dispose() { principal.dispose(); rate.dispose(); installments.dispose(); super.dispose(); }
+
+            @override
+            Widget build(BuildContext context) {
+              final cs = Theme.of(context).colorScheme;
+              return ListView(padding: const EdgeInsets.fromLTRB(16, 12, 16, 32), children: [
+                Card(clipBehavior: Clip.antiAlias, child: Container(padding: const EdgeInsets.all(20), decoration: const BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF6D28D9), Color(0xFFA855F7)])), child: const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Icon(Icons.calculate_rounded, color: Colors.white, size: 34), SizedBox(height: 12),
+                  Text('Calculadora de empréstimos', style: TextStyle(color: Colors.white, fontSize: 23, fontWeight: FontWeight.w900)),
+                  SizedBox(height: 5), Text('Simule juros, parcelas e total antes de fechar o empréstimo.', style: TextStyle(color: Colors.white70)),
+                ]))),
+                const SizedBox(height: 16),
+                Card(child: Padding(padding: const EdgeInsets.all(16), child: Column(children: [
+                  TextField(controller: principal, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Valor emprestado', prefixText: 'R\$ ', prefixIcon: Icon(Icons.attach_money_rounded))),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(initialValue: interestType, decoration: const InputDecoration(labelText: 'Tipo de juros', prefixIcon: Icon(Icons.percent_rounded)), items: const [DropdownMenuItem(value: 'fixed', child: Text('Juros fixos')), DropdownMenuItem(value: 'compound', child: Text('Juros compostos'))], onChanged: (v) => setState(() => interestType = v ?? 'fixed')),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(initialValue: paymentType, decoration: const InputDecoration(labelText: 'Forma de pagamento', prefixIcon: Icon(Icons.payments_outlined)), items: const [DropdownMenuItem(value: 'installments', child: Text('Parcelado')), DropdownMenuItem(value: 'single', child: Text('Pagamento único'))], onChanged: (v) => setState(() => paymentType = v ?? 'installments')),
+                  const SizedBox(height: 12),
+                  TextField(controller: rate, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Juros por período (%)', prefixIcon: Icon(Icons.trending_up_rounded))),
+                  const SizedBox(height: 12),
+                  TextField(controller: installments, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: paymentType == 'single' ? 'Períodos até o pagamento' : 'Quantidade de parcelas', prefixIcon: const Icon(Icons.format_list_numbered_rounded))),
+                  const SizedBox(height: 18),
+                  SizedBox(width: double.infinity, child: FilledButton.icon(onPressed: calculate, icon: const Icon(Icons.calculate), label: const Text('Calcular'))),
+                ]))),
+                if (total != null) ...[
+                  const SizedBox(height: 16),
+                  Row(children: [
+                    Expanded(child: _ResultCard(title: 'Total a receber', value: money(total!), icon: Icons.account_balance_wallet_rounded, color: cs.primary)),
+                    const SizedBox(width: 10),
+                    Expanded(child: _ResultCard(title: 'Juros', value: money(interest!), icon: Icons.percent_rounded, color: Colors.orange)),
+                  ]),
+                  const SizedBox(height: 10),
+                  Card(child: ListTile(leading: CircleAvatar(backgroundColor: cs.primaryContainer, child: Icon(Icons.payments_rounded, color: cs.onPrimaryContainer)), title: Text(paymentType == 'single' ? 'Pagamento único' : 'Valor de cada parcela'), subtitle: const Text('Resultado da simulação'), trailing: Text(money(installmentValue!), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900)))),
+                ],
+              ]);
+            }
+          }
+
+          class _ResultCard extends StatelessWidget {
+            final String title, value; final IconData icon; final Color color;
+            const _ResultCard({required this.title, required this.value, required this.icon, required this.color});
+            @override Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Icon(icon, color: color), const SizedBox(height: 10), Text(title, style: Theme.of(context).textTheme.bodySmall), const SizedBox(height: 4), FittedBox(child: Text(value, style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w900)))])));
+          }
+          ''')
+          PY
+
+      - name: Commit e enviar alterações
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib/main.dart lib/calculator_page.dart
+          if git diff --cached --quiet; then
+            echo "Nenhuma alteração necessária."
+            exit 0
+          fi
+          git commit -m "feat: Roots Cobrança visual e calculadora [roots-upgrade]"
+          git push
