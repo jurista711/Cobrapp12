@@ -383,7 +383,7 @@ class DashboardPage extends StatelessWidget {
           slivers: [
             SliverAppBar(
               pinned: true,
-              title: const Text('CobrApp', style: TextStyle(fontWeight: FontWeight.w800)),
+              title: const Text('Roots Cobrança', style: TextStyle(fontWeight: FontWeight.w800)),
               actions: [
                 IconButton(
                   tooltip: 'Sair',
