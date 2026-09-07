@@ -47,99 +47,35 @@ jobs:
       - name: Instalar dependências
         run: flutter pub get
 
-      - name: Forçar compileSdk 36
+      - name: Forçar compileSdk 36 no app e nos plugins
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import re
 
+          # Corrige o arquivo principal do app
+          for gradle in Path("android/app").glob("build.gradle*"):
+              text = gradle.read_text()
+              text = re.sub(r'compileSdk\s*[= ]*\d+', 'compileSdk = 36', text)
+              text = re.sub(r'compileSdkVersion\s*[= ]*\d+', 'compileSdkVersion = 36', text)
+              gradle.write_text(text)
+              print(f"✅ Corrigido: {gradle}")
+
+          # Corrige todos os plugins baixados
           root = Path.home() / ".pub-cache" / "hosted" / "pub.dev"
-
-          # Corrige o app
-          app = Path("android/app/build.gradle.kts")
-
-          if app.exists():
-              text = app.read_text()
-
-              text = re.sub(
-                  r'compileSdk\s*=\s*flutter\.compileSdkVersion',
-                  'compileSdk = 36',
-                  text
-              )
-
-              text = re.sub(
-                  r'compileSdk\s*=\s*\d+',
-                  'compileSdk = 36',
-                  text
-              )
-
-              if "isCoreLibraryDesugaringEnabled = true" not in text:
-                  text = text.replace(
-                      "targetCompatibility = JavaVersion.VERSION_17",
-                      "targetCompatibility = JavaVersion.VERSION_17\n"
-                      "        isCoreLibraryDesugaringEnabled = true",
-                      1
-                  )
-
-              dependency = (
-                  'coreLibraryDesugaring('
-                  '"com.android.tools:desugar_jdk_libs:2.1.5")'
-              )
-
-              if dependency not in text:
-                  text = text.replace(
-                      "kotlin {",
-                      'dependencies {\n'
-                      '    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")\n'
-                      '}\n\n'
-                      'kotlin {',
-                      1
-                  )
-
-              app.write_text(text)
-
-          # Corrige os plugins Flutter baixados pelo pub.
-          count = 0
-
           if root.exists():
-              for gradle in root.glob("*/android/build.gradle*"):
+              for gradle in root.glob("*/android/**/*.gradle*"):
                   try:
                       text = gradle.read_text()
-
-                      new_text = re.sub(
-                          r'compileSdk\s*=\s*flutter\.compileSdkVersion',
-                          'compileSdk = 36',
-                          text
-                      )
-
-                      new_text = re.sub(
-                          r'compileSdk\s*=\s*\d+',
-                          'compileSdk = 36',
-                          new_text
-                      )
-
+                      new_text = re.sub(r'compileSdk\s*[= ]*\d+', 'compileSdk = 36', text)
+                      new_text = re.sub(r'compileSdkVersion\s*[= ]*\d+', 'compileSdkVersion = 36', new_text)
                       if new_text != text:
                           gradle.write_text(new_text)
-                          count += 1
-                          print(f"Corrigido: {gradle}")
-
-                  except Exception:
+                          print(f"✅ Plugin corrigido: {gradle}")
+                  except:
                       pass
-
-          print("====================================")
-          print("APP COMPILE SDK: 36")
-          print(f"PLUGINS CORRIGIDOS: {count}")
-          print("DESUGARING: CONFIGURADO")
-          print("====================================")
+          print("✅ TODOS os arquivos configurados com compileSdk = 36")
           PY
-
-      - name: Conferir configurações
-        run: |
-          echo "=== APP ==="
-          grep -R "compileSdk" android/app/build.gradle.kts || true
-
-          echo "=== PLUGINS ==="
-          grep -R "compileSdk" "$HOME/.pub-cache/hosted/pub.dev/flutter_plugin_android_lifecycle"*"/android/" 2>/dev/null || true
 
       - name: Analisar projeto
         run: flutter analyze --no-fatal-infos || true
@@ -147,7 +83,7 @@ jobs:
       - name: Gerar APK
         run: flutter build apk --release
 
-      - name: Salvar APK
+      - name: Salvar APK pronto
         uses: actions/upload-artifact@v4
         with:
           name: CobrApp-APK
