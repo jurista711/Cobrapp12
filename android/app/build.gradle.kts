@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.example.cobrapp"
-    compileSdk = 36
+    compileSdk = 34   // ← AQUI TROCA DE 36 PRA 34!
 
     defaultConfig {
         applicationId = "com.example.cobrapp"
         minSdk = 21
-        targetSdk = 36
+        targetSdk = 34
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
@@ -28,7 +28,6 @@ android {
     }
 }
 
-// ✅ MOVIDO PRA FORA do bloco android — NOVO FORMATO!
 kotlin {
     compilerOptions {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
