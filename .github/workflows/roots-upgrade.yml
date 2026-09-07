@@ -21,15 +21,10 @@ jobs:
         run: |
           python3 <<'PY'
           from pathlib import Path
-
           main = Path('lib/main.dart')
           s = main.read_text()
-
           if "import 'calculator_page.dart';" not in s:
               s = s.replace("import 'data/cobrapp_repository.dart';", "import 'data/cobrapp_repository.dart';\nimport 'calculator_page.dart';")
-          if "import 'portfolio_page.dart';" not in s:
-              s = s.replace("import 'calculator_page.dart';", "import 'calculator_page.dart';\nimport 'portfolio_page.dart';")
-
           s = s.replace("title: 'CobrApp',", "title: 'Roots Cobrança',", 1)
           s = s.replace("colorSchemeSeed: const Color(0xFF16A085),", "colorSchemeSeed: const Color(0xFF7C3AED),", 1)
           s = s.replace("'CobrApp',", "'Roots Cobrança',", 1)
@@ -37,19 +32,14 @@ jobs:
           s = s.replace("CobrApp - Relatório da carteira", "Roots Cobrança - Relatório da carteira")
           s = s.replace("cobrapp_relatorio.pdf", "roots_cobranca_relatorio.pdf")
           s = s.replace("'CobrApp — Recibo'", "'Roots Cobrança — Recibo'")
-
           old_start = s.index('class HomePage extends StatefulWidget {')
           old_end = s.index('class StatCard extends StatelessWidget {')
-          home = r'''class HomePage extends StatefulWidget {
+          home = '''class HomePage extends StatefulWidget {
             const HomePage({super.key});
-
-            @override
-            State<HomePage> createState() => _HomePageState();
+            @override State<HomePage> createState() => _HomePageState();
           }
-
           class _HomePageState extends State<HomePage> {
             int tab = 0;
-
             Widget page() {
               switch (tab) {
                 case 1: return const CustomersPage();
@@ -62,78 +52,49 @@ jobs:
                 case 8: return const ReportsPage();
                 case 9: return const CalculatorPage();
                 case 10: return const SettingsPage();
-                case 11: return const PortfolioPage();
                 default: return const DashboardPage();
               }
             }
-
-            void select(int index) {
-              Navigator.of(context).pop();
-              setState(() => tab = index);
-            }
-
-            @override
-            Widget build(BuildContext context) {
+            void select(int index) { Navigator.of(context).pop(); setState(() => tab = index); }
+            @override Widget build(BuildContext context) {
               final cs = Theme.of(context).colorScheme;
               return Scaffold(
                 drawer: NavigationDrawer(
                   selectedIndex: tab,
                   onDestinationSelected: select,
-                  header: Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 28, 24, 18),
-                    child: Row(children: [
-                      Container(
-                        width: 48, height: 48,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          gradient: const LinearGradient(colors: [Color(0xFF7C3AED), Color(0xFFA855F7)]),
-                        ),
-                        child: const Icon(Icons.account_balance_wallet_rounded, color: Colors.white),
-                      ),
-                      const SizedBox(width: 14),
-                      const Expanded(child: Text('Roots Cobrança', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900))),
-                    ]),
-                  ),
+                  header: Padding(padding: const EdgeInsets.fromLTRB(24,28,24,18), child: Row(children: [
+                    Container(width:48,height:48,decoration:BoxDecoration(borderRadius:BorderRadius.circular(16),gradient:const LinearGradient(colors:[Color(0xFF7C3AED),Color(0xFFA855F7)])),child:const Icon(Icons.account_balance_wallet_rounded,color:Colors.white)),
+                    const SizedBox(width:14), const Expanded(child: Text('Roots Cobrança',style:TextStyle(fontSize:20,fontWeight:FontWeight.w900))),
+                  ])),
                   children: const [
-                    NavigationDrawerDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: Text('Início')),
-                    NavigationDrawerDestination(icon: Icon(Icons.people_outline), selectedIcon: Icon(Icons.people), label: Text('Clientes')),
-                    NavigationDrawerDestination(icon: Icon(Icons.account_balance_wallet_outlined), selectedIcon: Icon(Icons.account_balance_wallet), label: Text('Empréstimos')),
-                    NavigationDrawerDestination(icon: Icon(Icons.event_available_outlined), selectedIcon: Icon(Icons.event_available), label: Text('Cobranças')),
-                    NavigationDrawerDestination(icon: Icon(Icons.account_balance_outlined), selectedIcon: Icon(Icons.account_balance), label: Text('Caixa')),
-                    Divider(indent: 16, endIndent: 16),
-                    NavigationDrawerDestination(icon: Icon(Icons.payments_outlined), selectedIcon: Icon(Icons.payments), label: Text('Pagamentos')),
-                    NavigationDrawerDestination(icon: Icon(Icons.receipt_long_outlined), selectedIcon: Icon(Icons.receipt_long), label: Text('Recibos')),
-                    NavigationDrawerDestination(icon: Icon(Icons.route_outlined), selectedIcon: Icon(Icons.route), label: Text('Rotas')),
-                    NavigationDrawerDestination(icon: Icon(Icons.analytics_outlined), selectedIcon: Icon(Icons.analytics), label: Text('Relatórios')),
-                    NavigationDrawerDestination(icon: Icon(Icons.account_balance_outlined), selectedIcon: Icon(Icons.account_balance), label: Text('Gestão da Carteira')),
-                    NavigationDrawerDestination(icon: Icon(Icons.calculate_outlined), selectedIcon: Icon(Icons.calculate), label: Text('Calculadora')),
-                    NavigationDrawerDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: Text('Configurações')),
+                    NavigationDrawerDestination(icon:Icon(Icons.dashboard_outlined),selectedIcon:Icon(Icons.dashboard),label:Text('Início')),
+                    NavigationDrawerDestination(icon:Icon(Icons.people_outline),selectedIcon:Icon(Icons.people),label:Text('Clientes')),
+                    NavigationDrawerDestination(icon:Icon(Icons.account_balance_wallet_outlined),selectedIcon:Icon(Icons.account_balance_wallet),label:Text('Empréstimos')),
+                    NavigationDrawerDestination(icon:Icon(Icons.event_available_outlined),selectedIcon:Icon(Icons.event_available),label:Text('Cobranças')),
+                    NavigationDrawerDestination(icon:Icon(Icons.account_balance_outlined),selectedIcon:Icon(Icons.account_balance),label:Text('Caixa')),
+                    Divider(indent:16,endIndent:16),
+                    NavigationDrawerDestination(icon:Icon(Icons.payments_outlined),selectedIcon:Icon(Icons.payments),label:Text('Pagamentos')),
+                    NavigationDrawerDestination(icon:Icon(Icons.receipt_long_outlined),selectedIcon:Icon(Icons.receipt_long),label:Text('Recibos')),
+                    NavigationDrawerDestination(icon:Icon(Icons.route_outlined),selectedIcon:Icon(Icons.route),label:Text('Rotas')),
+                    NavigationDrawerDestination(icon:Icon(Icons.analytics_outlined),selectedIcon:Icon(Icons.analytics),label:Text('Relatórios')),
+                    NavigationDrawerDestination(icon:Icon(Icons.calculate_outlined),selectedIcon:Icon(Icons.calculate),label:Text('Calculadora')),
+                    NavigationDrawerDestination(icon:Icon(Icons.settings_outlined),selectedIcon:Icon(Icons.settings),label:Text('Configurações')),
                   ],
                 ),
-                appBar: AppBar(
-                  title: const Text('Roots Cobrança', style: TextStyle(fontWeight: FontWeight.w900)),
-                  actions: [IconButton(tooltip: 'Sair', onPressed: () => CobrAppRepository().db.auth.signOut(), icon: const Icon(Icons.logout))],
-                ),
-                body: SafeArea(child: page()),
-                bottomNavigationBar: NavigationBar(
-                  selectedIndex: tab > 4 ? 0 : tab,
-                  onDestinationSelected: (index) => setState(() => tab = index),
-                  indicatorColor: cs.primaryContainer,
-                  destinations: const [
-                    NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: 'Início'),
-                    NavigationDestination(icon: Icon(Icons.people_outline), selectedIcon: Icon(Icons.people), label: 'Clientes'),
-                    NavigationDestination(icon: Icon(Icons.account_balance_wallet_outlined), selectedIcon: Icon(Icons.account_balance_wallet), label: 'Empréstimos'),
-                    NavigationDestination(icon: Icon(Icons.event_available_outlined), selectedIcon: Icon(Icons.event_available), label: 'Cobranças'),
-                    NavigationDestination(icon: Icon(Icons.account_balance_outlined), selectedIcon: Icon(Icons.account_balance), label: 'Caixa'),
-                  ],
-                ),
+                appBar: AppBar(title:const Text('Roots Cobrança',style:TextStyle(fontWeight:FontWeight.w900)),actions:[IconButton(tooltip:'Sair',onPressed:()=>CobrAppRepository().db.auth.signOut(),icon:const Icon(Icons.logout))]),
+                body:SafeArea(child:page()),
+                bottomNavigationBar:NavigationBar(selectedIndex:tab>4?0:tab,onDestinationSelected:(index)=>setState(()=>tab=index),indicatorColor:cs.primaryContainer,destinations:const [
+                  NavigationDestination(icon:Icon(Icons.dashboard_outlined),selectedIcon:Icon(Icons.dashboard),label:'Início'),
+                  NavigationDestination(icon:Icon(Icons.people_outline),selectedIcon:Icon(Icons.people),label:'Clientes'),
+                  NavigationDestination(icon:Icon(Icons.account_balance_wallet_outlined),selectedIcon:Icon(Icons.account_balance_wallet),label:'Empréstimos'),
+                  NavigationDestination(icon:Icon(Icons.event_available_outlined),selectedIcon:Icon(Icons.event_available),label:'Cobranças'),
+                  NavigationDestination(icon:Icon(Icons.account_balance_outlined),selectedIcon:Icon(Icons.account_balance),label:'Caixa'),
+                ]),
               );
             }
           }
-
           '''
           s = s[:old_start] + home + s[old_end:]
-
           old_migration = '''                  const SizedBox(height: 22),
                   Card(
                     child: Padding(
@@ -149,90 +110,61 @@ jobs:
                     ),
                   ),'''
           s = s.replace(old_migration, '                  const SizedBox(height: 22),')
-
           main.write_text(s)
 
           calc = Path('lib/calculator_page.dart')
           if not calc.exists():
-              calc.write_text(r'''import 'package:flutter/material.dart';
+            calc.write_text('''import 'package:flutter/material.dart';
           import 'package:intl/intl.dart';
-
-          class CalculatorPage extends StatefulWidget {
-            const CalculatorPage({super.key});
-            @override
-            State<CalculatorPage> createState() => _CalculatorPageState();
-          }
-
+          class CalculatorPage extends StatefulWidget { const CalculatorPage({super.key}); @override State<CalculatorPage> createState()=>_CalculatorPageState(); }
           class _CalculatorPageState extends State<CalculatorPage> {
-            final principal = TextEditingController();
-            final rate = TextEditingController(text: '20');
-            final installments = TextEditingController(text: '4');
-            String interestType = 'fixed';
-            String paymentType = 'installments';
-            double? total, interest, installmentValue;
-
-            String money(double v) => NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$').format(v);
-            double power(double b, int n) { var r = 1.0; for (var i = 0; i < n; i++) r *= b; return r; }
-
-            void calculate() {
-              final p = double.tryParse(principal.text.replaceAll(',', '.'));
-              final r = double.tryParse(rate.text.replaceAll(',', '.'));
-              final n = int.tryParse(installments.text);
-              if (p == null || p <= 0 || r == null || r < 0 || n == null || n <= 0) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Informe valores válidos para calcular.')));
-                return;
-              }
-              final t = interestType == 'compound'
-                  ? p * power(1 + r / 100, n)
-                  : paymentType == 'single' ? p * (1 + (r / 100) * n) : p * (1 + r / 100);
-              setState(() { total = t; interest = t - p; installmentValue = paymentType == 'single' ? t : t / n; });
-            }
-
-            @override
-            void dispose() { principal.dispose(); rate.dispose(); installments.dispose(); super.dispose(); }
-
-            @override
-            Widget build(BuildContext context) {
-              final cs = Theme.of(context).colorScheme;
-              return ListView(padding: const EdgeInsets.fromLTRB(16, 12, 16, 32), children: [
-                Card(clipBehavior: Clip.antiAlias, child: Container(padding: const EdgeInsets.all(20), decoration: const BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF6D28D9), Color(0xFFA855F7)])), child: const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Icon(Icons.calculate_rounded, color: Colors.white, size: 34), SizedBox(height: 12),
-                  Text('Calculadora de empréstimos', style: TextStyle(color: Colors.white, fontSize: 23, fontWeight: FontWeight.w900)),
-                  SizedBox(height: 5), Text('Simule juros, parcelas e total antes de fechar o empréstimo.', style: TextStyle(color: Colors.white70)),
-                ]))),
-                const SizedBox(height: 16),
-                Card(child: Padding(padding: const EdgeInsets.all(16), child: Column(children: [
-                  TextField(controller: principal, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Valor emprestado', prefixText: 'R\$ ', prefixIcon: Icon(Icons.attach_money_rounded))),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(initialValue: interestType, decoration: const InputDecoration(labelText: 'Tipo de juros', prefixIcon: Icon(Icons.percent_rounded)), items: const [DropdownMenuItem(value: 'fixed', child: Text('Juros fixos')), DropdownMenuItem(value: 'compound', child: Text('Juros compostos'))], onChanged: (v) => setState(() => interestType = v ?? 'fixed')),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(initialValue: paymentType, decoration: const InputDecoration(labelText: 'Forma de pagamento', prefixIcon: Icon(Icons.payments_outlined)), items: const [DropdownMenuItem(value: 'installments', child: Text('Parcelado')), DropdownMenuItem(value: 'single', child: Text('Pagamento único'))], onChanged: (v) => setState(() => paymentType = v ?? 'installments')),
-                  const SizedBox(height: 12),
-                  TextField(controller: rate, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Juros por período (%)', prefixIcon: Icon(Icons.trending_up_rounded))),
-                  const SizedBox(height: 12),
-                  TextField(controller: installments, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: paymentType == 'single' ? 'Períodos até o pagamento' : 'Quantidade de parcelas', prefixIcon: const Icon(Icons.format_list_numbered_rounded))),
-                  const SizedBox(height: 18),
-                  SizedBox(width: double.infinity, child: FilledButton.icon(onPressed: calculate, icon: const Icon(Icons.calculate), label: const Text('Calcular'))),
-                ]))),
-                if (total != null) ...[
-                  const SizedBox(height: 16),
-                  Row(children: [
-                    Expanded(child: _ResultCard(title: 'Total a receber', value: money(total!), icon: Icons.account_balance_wallet_rounded, color: cs.primary)),
-                    const SizedBox(width: 10),
-                    Expanded(child: _ResultCard(title: 'Juros', value: money(interest!), icon: Icons.percent_rounded, color: Colors.orange)),
-                  ]),
-                  const SizedBox(height: 10),
-                  Card(child: ListTile(leading: CircleAvatar(backgroundColor: cs.primaryContainer, child: Icon(Icons.payments_rounded, color: cs.onPrimaryContainer)), title: Text(paymentType == 'single' ? 'Pagamento único' : 'Valor de cada parcela'), subtitle: const Text('Resultado da simulação'), trailing: Text(money(installmentValue!), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900)))),
-                ],
-              ]);
-            }
+            final principal=TextEditingController(); final rate=TextEditingController(text:'20'); final installments=TextEditingController(text:'4'); String interestType='fixed'; String paymentType='installments'; double? total,interest,installmentValue;
+            String money(double v)=>NumberFormat.currency(locale:'pt_BR',symbol:'R\\$').format(v); double power(double b,int n){var r=1.0;for(var i=0;i<n;i++)r*=b;return r;}
+            void calculate(){final p=double.tryParse(principal.text.replaceAll(',','.'));final r=double.tryParse(rate.text.replaceAll(',','.'));final n=int.tryParse(installments.text);if(p==null||p<=0||r==null||r<0||n==null||n<=0){ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:Text('Informe valores válidos para calcular.')));return;}final t=interestType=='compound'?p*power(1+r/100,n):p*(1+(r/100)*n);setState((){total=t;interest=t-p;installmentValue=paymentType=='single'?t:t/n;});}
+            @override void dispose(){principal.dispose();rate.dispose();installments.dispose();super.dispose();}
+            @override Widget build(BuildContext context){final cs=Theme.of(context).colorScheme;return ListView(padding:const EdgeInsets.fromLTRB(16,12,16,32),children:[Card(clipBehavior:Clip.antiAlias,child:Container(padding:const EdgeInsets.all(20),decoration:const BoxDecoration(gradient:LinearGradient(colors:[Color(0xFF6D28D9),Color(0xFFA855F7)])),child:const Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Icon(Icons.calculate_rounded,color:Colors.white,size:34),SizedBox(height:12),Text('Calculadora de empréstimos',style:TextStyle(color:Colors.white,fontSize:23,fontWeight:FontWeight.w900)),SizedBox(height:5),Text('Simule juros, parcelas e total antes de fechar o empréstimo.',style:TextStyle(color:Colors.white70))]))),const SizedBox(height:16),Card(child:Padding(padding:const EdgeInsets.all(16),child:Column(children:[TextField(controller:principal,keyboardType:const TextInputType.numberWithOptions(decimal:true),decoration:const InputDecoration(labelText:'Valor emprestado',prefixText:'R\\$ ',prefixIcon:Icon(Icons.attach_money_rounded))),const SizedBox(height:12),DropdownButtonFormField<String>(initialValue:interestType,decoration:const InputDecoration(labelText:'Tipo de juros',prefixIcon:Icon(Icons.percent_rounded)),items:const[DropdownMenuItem(value:'fixed',child:Text('Juros fixos')),DropdownMenuItem(value:'compound',child:Text('Juros compostos'))],onChanged:(v)=>setState(()=>interestType=v??'fixed')),const SizedBox(height:12),DropdownButtonFormField<String>(initialValue:paymentType,decoration:const InputDecoration(labelText:'Forma de pagamento',prefixIcon:Icon(Icons.payments_outlined)),items:const[DropdownMenuItem(value:'installments',child:Text('Parcelado')),DropdownMenuItem(value:'single',child:Text('Pagamento único'))],onChanged:(v)=>setState(()=>paymentType=v??'installments')),const SizedBox(height:12),TextField(controller:rate,keyboardType:const TextInputType.numberWithOptions(decimal:true),decoration:const InputDecoration(labelText:'Juros por período (%)',prefixIcon:Icon(Icons.trending_up_rounded))),const SizedBox(height:12),TextField(controller:installments,keyboardType:TextInputType.number,decoration:InputDecoration(labelText:paymentType=='single'?'Períodos até o pagamento':'Quantidade de parcelas',prefixIcon:const Icon(Icons.format_list_numbered_rounded))),const SizedBox(height:18),SizedBox(width:double.infinity,child:FilledButton.icon(onPressed:calculate,icon:const Icon(Icons.calculate),label:const Text('Calcular')))]))),if(total!=null)...[const SizedBox(height:16),Row(children:[Expanded(child:_ResultCard(title:'Total a receber',value:money(total!),icon:Icons.account_balance_wallet_rounded,color:cs.primary)),const SizedBox(width:10),Expanded(child:_ResultCard(title:'Juros',value:money(interest!),icon:Icons.percent_rounded,color:Colors.orange))]),const SizedBox(height:10),Card(child:ListTile(leading:CircleAvatar(backgroundColor:cs.primaryContainer,child:Icon(Icons.payments_rounded,color:cs.onPrimaryContainer)),title:Text(paymentType=='single'?'Pagamento único':'Valor de cada parcela'),subtitle:const Text('Resultado da simulação'),trailing:Text(money(installmentValue!),style:const TextStyle(fontSize:18,fontWeight:FontWeight.w900))))]]);}
           }
+          class _ResultCard extends StatelessWidget{final String title,value;final IconData icon;final Color color;const _ResultCard({required this.title,required this.value,required this.icon,required this.color});@override Widget build(BuildContext context)=>Card(child:Padding(padding:const EdgeInsets.all(16),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Icon(icon,color:color),const SizedBox(height:10),Text(title,style:Theme.of(context).textTheme.bodySmall),const SizedBox(height:4),FittedBox(child:Text(value,style:const TextStyle(fontSize:19,fontWeight:FontWeight.w900)))])));}
+          ''')
+          PY
 
-          class _ResultCard extends StatelessWidget {
-            final String title, value; final IconData icon; final Color color;
-            const _ResultCard({required this.title, required this.value, required this.icon, required this.color});
-            @override Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Icon(icon, color: color), const SizedBox(height: 10), Text(title, style: Theme.of(context).textTheme.bodySmall), const SizedBox(height: 4), FittedBox(child: Text(value, style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w900)))])));
+      - name: Evoluir Gestão da Carteira
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          p=Path('lib/portfolio_page.dart')
+          p.write_text(r'''import 'package:flutter/material.dart';
+          import 'data/cobrapp_repository.dart';
+
+          class PortfolioPage extends StatefulWidget { const PortfolioPage({super.key}); @override State<PortfolioPage> createState()=>_PortfolioPageState(); }
+          class _PortfolioPageState extends State<PortfolioPage> {
+            late Future<Map<String,dynamic>> future;
+            @override void initState(){super.initState();future=_load();}
+            double n(dynamic v)=>v is num?v.toDouble():double.tryParse('$v')??0;
+            String money(double v){final s=v.toStringAsFixed(2).replaceAll('.',',');final a=s.split(',');var i=a[0];final neg=i.startsWith('-');if(neg)i=i.substring(1);final g=<String>[];for(var x=i.length;x>0;x-=3){final st=x-3<0?0:x-3;g.insert(0,i.substring(st,x));}return '${neg?'-':''}R\\$ ${g.join('.').isEmpty?'0':g.join('.')}';}
+            Future<Map<String,dynamic>> _load() async {
+              final repo=CobrAppRepository();
+              final loans=List<Map<String,dynamic>>.from(await repo.db.from('cobrapp_loans').select('id,customer_id,principal,total_amount,status,created_at,cobrapp_customers(name)').eq('user_id',repo.uid).order('created_at',ascending:false));
+              final installments=List<Map<String,dynamic>>.from(await repo.db.from('cobrapp_installments').select('id,loan_id,customer_id,amount,paid_amount,interest_amount,interest_paid,status,due_date').eq('user_id',repo.uid).order('due_date'));
+              final payments=List<Map<String,dynamic>>.from(await repo.db.from('cobrapp_payments').select('amount,paid_at,type,customer_id').eq('user_id',repo.uid).order('paid_at',ascending:false));
+              final expenses=List<Map<String,dynamic>>.from(await repo.db.from('cobrapp_expenses').select('amount,spent_at').eq('user_id',repo.uid).order('spent_at',ascending:false));
+              final active=loans.where((x)=>x['status']=='active').toList();final ids=active.map((x)=>x['id'].toString()).toSet();final ai=installments.where((x)=>ids.contains(x['loan_id']?.toString())).toList();
+              final principal=active.fold(0.0,(a,x)=>a+n(x['principal']));final total=active.fold(0.0,(a,x)=>a+n(x['total_amount']));final interest=(total-principal).clamp(0,double.infinity).toDouble();
+              final pending=ai.fold(0.0,(a,x)=>a+(n(x['amount'])-n(x['paid_amount'])).clamp(0,double.infinity));
+              final today=DateTime.now();final overdue=ai.where((x)=>x['status']!='paid'&&DateTime.tryParse('${x['due_date']}')?.isBefore(DateTime(today.year,today.month,today.day))==true).fold(0.0,(a,x)=>a+(n(x['amount'])-n(x['paid_amount'])).clamp(0,double.infinity));
+              final received=payments.fold(0.0,(a,x)=>a+n(x['amount']));final expenseTotal=expenses.fold(0.0,(a,x)=>a+n(x['amount']));
+              final projectedNet=interest-expenseTotal;
+              final months=<Map<String,dynamic>>[];
+              for(var offset=5;offset>=0;offset--){final d=DateTime(today.year,today.month-offset,1);final next=DateTime(d.year,d.month+1,1);double loaned=0,pay=0,expense=0;for(final x in loans){final c=DateTime.tryParse('${x['created_at']}');if(c!=null&&!c.isBefore(d)&&c.isBefore(next))loaned+=n(x['principal']);}for(final x in payments){final c=DateTime.tryParse('${x['paid_at']}');if(c!=null&&!c.isBefore(d)&&c.isBefore(next))pay+=n(x['amount']);}for(final x in expenses){final c=DateTime.tryParse('${x['spent_at']}');if(c!=null&&!c.isBefore(d)&&c.isBefore(next))expense+=n(x['amount']);}months.add({'label':'${d.month.toString().padLeft(2,'0')}/${d.year.toString().substring(2)}','loaned':loaned,'received':pay,'expense':expense});}
+              return {'principal':principal,'interest':interest,'total':total,'pending':pending,'overdue':overdue,'received':received,'expenses':expenseTotal,'projectedNet':projectedNet,'rate':principal<=0?0:(interest/principal)*100,'loans':active.length,'months':months};
+            }
+            @override Widget build(BuildContext context){return FutureBuilder<Map<String,dynamic>>(future:future,builder:(context,s){if(s.connectionState!=ConnectionState.done)return const Center(child:CircularProgressIndicator());if(s.hasError)return Center(child:Text('Não foi possível carregar a carteira.\\n${s.error}'));final d=s.data!;final cs=Theme.of(context).colorScheme;final months=List<Map<String,dynamic>>.from(d['months']);return RefreshIndicator(onRefresh:()async=>setState(()=>future=_load()),child:ListView(physics:const AlwaysScrollableScrollPhysics(),padding:const EdgeInsets.fromLTRB(16,12,16,28),children:[Text('Gestão da Carteira',style:Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight:FontWeight.w900)),const SizedBox(height:6),const Text('Visão completa do dinheiro na rua, juros, lucro projetado, recebimentos e risco da carteira.'),const SizedBox(height:18),_Hero(title:'Total da carteira',value:money(n(d['total'])),subtitle:'${money(n(d['principal']))} de capital + ${money(n(d['interest']))} de juros previstos',colors:[cs.primary,const Color(0xFFA855F7)]),const SizedBox(height:12),_Grid(cards:[_M('Na rua',money(n(d['principal'])),'Capital emprestado',Icons.trending_up_rounded,cs.primary),_M('Juros previstos',money(n(d['interest'])),'Receita projetada',Icons.percent_rounded,const Color(0xFF7C3AED)),_M('Capital recebido',money(n(d['received'])-n(d['interest'])), 'Estimativa de principal recuperado',Icons.account_balance_rounded,const Color(0xFF2563EB)),_M('Juros recebidos',money(n(d['received'])>0?n(d['received']):0),'Total de pagamentos recebidos',Icons.payments_rounded,const Color(0xFF16A34A)),_M('Inadimplência',money(n(d['overdue'])),'Saldo vencido',Icons.warning_amber_rounded,const Color(0xFFDC2626)),_M('Lucro previsto',money(n(d['projectedNet'])),'Juros previstos menos despesas',Icons.auto_graph_rounded,const Color(0xFFEA580C))]),const SizedBox(height:12),Card(child:ListTile(title:const Text('Taxa da carteira',style:TextStyle(fontWeight:FontWeight.w800)),subtitle:Text('${n(d['loans']).toInt()} empréstimos ativos'),trailing:Text('${n(d['rate']).toStringAsFixed(1).replaceAll('.',',')}%',style:const TextStyle(fontSize:20,fontWeight:FontWeight.w900)))),const SizedBox(height:20),Text('Evolução dos últimos 6 meses',style:Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight:FontWeight.w900)),const SizedBox(height:10),Card(child:Padding(padding:const EdgeInsets.all(16),child:_Chart(months:months))),const SizedBox(height:8),const Text('Barras: emprestado, recebido e despesas. Os valores são calculados diretamente do banco.',textAlign:TextAlign.center,style:TextStyle(fontSize:12))]));}
           }
+          class _Grid extends StatelessWidget{final List<Widget> cards;const _Grid({required this.cards});@override Widget build(BuildContext c){return Wrap(spacing:10,runSpacing:10,children:cards.map((x)=>SizedBox(width:(MediaQuery.sizeOf(c).width-42)/2,child:x)).toList());}}
+          class _M extends StatelessWidget{final String t,v,sub;final IconData i;final Color c;const _M(this.t,this.v,this.sub,this.i,this.c);@override Widget build(BuildContext x)=>Card(child:Padding(padding:const EdgeInsets.all(14),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[CircleAvatar(backgroundColor:c.withValues(alpha:.12),child:Icon(i,color:c)),const SizedBox(height:9),Text(t,style:Theme.of(x).textTheme.bodySmall),const SizedBox(height:3),FittedBox(alignment:Alignment.centerLeft,child:Text(v,style:const TextStyle(fontSize:18,fontWeight:FontWeight.w900))),const SizedBox(height:3),Text(sub,style:Theme.of(x).textTheme.bodySmall)])));
+          class _Hero extends StatelessWidget{final String title,value,subtitle;final List<Color> colors;const _Hero({required this.title,required this.value,required this.subtitle,required this.colors});@override Widget build(BuildContext c)=>Container(padding:const EdgeInsets.all(20),decoration:BoxDecoration(borderRadius:BorderRadius.circular(24),gradient:LinearGradient(colors:colors)),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[const Icon(Icons.account_balance_wallet_rounded,color:Colors.white),const SizedBox(height:12),Text(title,style:const TextStyle(color:Colors.white,fontWeight:FontWeight.w800)),const SizedBox(height:8),Text(value,style:const TextStyle(color:Colors.white,fontSize:30,fontWeight:FontWeight.w900)),const SizedBox(height:5),Text(subtitle,style:const TextStyle(color:Colors.white70))]));}
+          class _Chart extends StatelessWidget{final List<Map<String,dynamic>> months;const _Chart({required this.months});double n(dynamic v)=>v is num?v.toDouble():0;@override Widget build(BuildContext c){final maxV=months.fold<double>(1,(m,x)=>[m,n(x['loaned']),n(x['received']),n(x['expense'])].reduce((a,b)=>a>b?a:b));return SizedBox(height:230,child:Row(crossAxisAlignment:CrossAxisAlignment.end,children:months.map((m){final vals=[n(m['loaned']),n(m['received']),n(m['expense'])];return Expanded(child:Padding(padding:const EdgeInsets.symmetric(horizontal:3),child:Column(mainAxisAlignment:MainAxisAlignment.end,children:[Expanded(child:Row(crossAxisAlignment:CrossAxisAlignment.end,children:vals.map((v)=>Expanded(child:Padding(padding:const EdgeInsets.symmetric(horizontal:1),child:Container(height:150*(v/maxV),decoration:BoxDecoration(color:vals.indexOf(v)==0?const Color(0xFF7C3AED):vals.indexOf(v)==1?const Color(0xFF16A34A):const Color(0xFFDC2626),borderRadius:const BorderRadius.vertical(top:Radius.circular(5))))))).toList())),const SizedBox(height:6),Text('${m['label']}',style:const TextStyle(fontSize:10))])));}).toList()));}}
           ''')
           PY
 
@@ -240,10 +172,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add lib/main.dart lib/calculator_page.dart
-          if git diff --cached --quiet; then
-            echo "Nenhuma alteração necessária."
-            exit 0
-          fi
-          git commit -m "feat: Roots Cobrança visual e calculadora [roots-upgrade]"
+          git add lib/main.dart lib/calculator_page.dart lib/portfolio_page.dart
+          if git diff --cached --quiet; then echo "Nenhuma alteração necessária."; exit 0; fi
+          git commit -m "feat: evoluir gestão da carteira [roots-upgrade]"
           git push
