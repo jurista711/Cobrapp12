@@ -15,7 +15,7 @@ class CobrAppRepository {
 
   Future<List<Map<String,dynamic>>> installments({String? loanId}) async {var q=db.from('cobrapp_installments').select('*, cobrapp_customers(name), cobrapp_loans(principal,interest_rate,status)'); q=q.eq('user_id',uid); if(loanId!=null)q=q.eq('loan_id',loanId); return List<Map<String,dynamic>>.from(await q.order('due_date'));}
   Future<List<Map<String,dynamic>>> receipts() async => List<Map<String,dynamic>>.from(await db.from('cobrapp_receipts').select('*, cobrapp_customers(name)').eq('user_id',uid).order('issued_at',ascending:false));
-  Future<List<Map<String,dynamic>>> payments() async => List<Map<String,dynamic>>.from(await db.from('cobrapp_payments').select('*, cobrapp_customers(name), cobrapp_loans(principal), cobrapp_installments(number)').eq('user_id',uid).order('paid_at',ascending:false));
+  Future<List<Map<String,dynamic>>> payments() async => List<Map<String,dynamic>>.from(await db.from('cobrapp_payments').select('amount,paid_at,type,customer_id').eq('user_id',uid).order('paid_at',ascending:false));
   Future<Map<String,dynamic>> addPayment({required String installmentId,required double amount,String? method,String? notes,String type='total'}) async => Map<String,dynamic>.from(await db.rpc('cobrapp_registrar_pagamento',params:{'p_installment_id':installmentId,'p_amount':amount,'p_method':method??'Dinheiro','p_notes':notes,'p_type':type}));
 
   Future<List<Map<String,dynamic>>> routes() async => List<Map<String,dynamic>>.from(await db.from('cobrapp_routes').select('*, cobrapp_customer_routes(customer_id, cobrapp_customers(id,name,phone,address))').eq('user_id',uid).order('name'));
@@ -34,7 +34,7 @@ class CobrAppRepository {
     final installments=List<Map<String,dynamic>>.from(await db.from('cobrapp_installments').select('id,loan_id,customer_id,number,due_date,amount,paid_amount,status').eq('user_id',uid).order('due_date'));
     final payments=List<Map<String,dynamic>>.from(await db.from('cobrapp_payments').select('amount,paid_at,type,customer_id').eq('user_id',uid).order('paid_at',ascending:false));
     final expenses=List<Map<String,dynamic>>.from(await db.from('cobrapp_expenses').select('amount,spent_at,category').eq('user_id',uid).order('spent_at',ascending:false));
-    bool inRange(String? value){ if(value==null)return true; final d=DateTime.tryParse(value); if(d==null)return true; if(from!=null && d.isBefore(DateTime(from!.year,from!.month,from!.day)))return false; if(to!=null && d.isAfter(DateTime(to!.year,to!.month,to!.day,23,59,59)))return false; return true; }
+    bool inRange(String? value){ if(value==null)return true; final d=DateTime.tryParse(value); if(d==null)return true; if(from!=null && d.isBefore(DateTime(from.year,from.month,from.day)))return false; if(to!=null && d.isAfter(DateTime(to.year,to.month,to.day,23,59,59)))return false; return true; }
     final fp=payments.where((x)=>inRange(x['paid_at']?.toString())).toList();
     final fe=expenses.where((x)=>inRange(x['spent_at']?.toString())).toList();
     double sum(Iterable<Map<String,dynamic>> xs,String key)=>xs.fold<double>(0,(a,x)=>a+((x[key] as num?)?.toDouble()??0));
