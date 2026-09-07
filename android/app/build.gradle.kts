@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.example.cobrapp"
-    compileSdk = 34   // ← AQUI TROCA DE 36 PRA 34!
+    compileSdk = 36   // ✅ OBRIGATÓRIO — NÃO MUDA!
 
     defaultConfig {
         applicationId = "com.example.cobrapp"
         minSdk = 21
-        targetSdk = 34
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
