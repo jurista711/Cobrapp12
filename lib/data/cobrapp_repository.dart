@@ -15,7 +15,7 @@ class CobrAppRepository {
 
   Future<List<Map<String,dynamic>>> installments({String? loanId}) async {var q=db.from('cobrapp_installments').select('*, cobrapp_customers(name), cobrapp_loans(principal,interest_rate,status)'); q=q.eq('user_id',uid); if(loanId!=null)q=q.eq('loan_id',loanId); return List<Map<String,dynamic>>.from(await q.order('due_date'));}
   Future<List<Map<String,dynamic>>> receipts() async => List<Map<String,dynamic>>.from(await db.from('cobrapp_receipts').select('*, cobrapp_customers(name)').eq('user_id',uid).order('issued_at',ascending:false));
-  Future<List<Map<String,dynamic>>> payments() async => List<Map<String,dynamic>>.from(await db.from('cobrapp_payments').select('amount,paid_at,type,customer_id').eq('user_id',uid).order('paid_at',ascending:false));
+  Future<List<Map<String,dynamic>>> payments() async => List<Map<String,dynamic>>.from(await db.from('cobrapp_payments').select('*, cobrapp_customers(name), cobrapp_loans(principal), cobrapp_installments(number)').eq('user_id',uid).order('paid_at',ascending:false));
   Future<Map<String,dynamic>> addPayment({required String installmentId,required double amount,String? method,String? notes,String type='total'}) async => Map<String,dynamic>.from(await db.rpc('cobrapp_registrar_pagamento',params:{'p_installment_id':installmentId,'p_amount':amount,'p_method':method??'Dinheiro','p_notes':notes,'p_type':type}));
 
   Future<List<Map<String,dynamic>>> routes() async => List<Map<String,dynamic>>.from(await db.from('cobrapp_routes').select('*, cobrapp_customer_routes(customer_id, cobrapp_customers(id,name,phone,address))').eq('user_id',uid).order('name'));
