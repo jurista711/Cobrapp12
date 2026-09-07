@@ -15,7 +15,7 @@ jobs:
       - name: Configurar Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: '3.47.2'   # ← TROCA AQUI! Versão nova!
           channel: 'stable'
 
       - name: Instalar dependências
@@ -24,7 +24,7 @@ jobs:
       - name: Compilar APK
         run: flutter build apk --release
 
-      - name: Salvar APK pronto
+      - name: Salvar APK
         uses: actions/upload-artifact@v4
         with:
           name: CobrApp-APK
