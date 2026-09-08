@@ -1,0 +1,91 @@
+name: Corrigir navegação e visual da calculadora
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Corrigir navegação e calculadora
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          main = Path('lib/main.dart')
+          s = main.read_text()
+
+          old = """      case 8: return const ReportsPage();
+      case 9: return const CalculatorPage();
+      case 10: return const SettingsPage();
+      case 11: return const PortfolioPage();"""
+          new = """      case 8: return const ReportsPage();
+      case 9: return const PortfolioPage();
+      case 10: return const CalculatorPage();
+      case 11: return const SettingsPage();"""
+
+          if old not in s:
+              raise SystemExit('Mapeamento de navegação esperado não encontrado.')
+          s = s.replace(old, new, 1)
+          main.write_text(s)
+
+          calc = Path('lib/calculator_page.dart')
+          c = calc.read_text()
+
+          old_form = """        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),"""
+          new_form = """        Card(
+          elevation: 0,
+          color: const Color(0xFFF4EEFF),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+            side: const BorderSide(color: Color(0xFFE1D2FF)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(18),"""
+          if old_form in c:
+              c = c.replace(old_form, new_form, 1)
+
+          old_result = """    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),"""
+          new_result = """    return Card(
+      elevation: 0,
+      color: color.withValues(alpha: 0.08),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(22),
+        side: BorderSide(color: color.withValues(alpha: 0.22)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),"""
+          if old_result in c:
+              c = c.replace(old_result, new_result, 1)
+
+          calc.write_text(c)
+          PY
+
+      - name: Verificar
+        run: |
+          flutter analyze --no-fatal-infos
+          flutter test
+
+      - name: Commit e push
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib/main.dart lib/calculator_page.dart
+          if git diff --cached --quiet; then
+            echo "Nenhuma alteração necessária."
+            exit 0
+          fi
+          git commit -m "fix: corrigir navegação do menu e visual da calculadora [navigation-fix]"
+          git push
