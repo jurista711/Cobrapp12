@@ -286,7 +286,6 @@ class _HomePageState extends State<HomePage> {
   }
   void select(int index) { Navigator.of(context).pop(); setState(() => tab = index); }
   @override Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     return Scaffold(
       drawer: NavigationDrawer(
         selectedIndex: tab,
