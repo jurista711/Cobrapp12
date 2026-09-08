@@ -83,8 +83,8 @@ s = s.replace("CircleAvatar(child: Icon(icon, size: 20)),", "CircleAvatar(backgr
 
 s = s.replace("          ],\n        );\n      },\n    );\n  }\n}\n\nclass ReportsPage", "          ],\n        ),\n        );\n      },\n    );\n  }\n}\n\nclass ReportsPage", 1)
 
-# Remove the now-unused color scheme local from HomePage.
-s = s.replace("    final cs = Theme.of(context).colorScheme;\n", "", 1)
+# Remove the now-unused color scheme local from HomePage, even if indentation changes.
+s = re.sub(r"^[ \t]*final cs = Theme\.of\(context\)\.colorScheme;\r?\n", "", s, count=1, flags=re.MULTILINE)
 
 p.write_text(s)
 
@@ -93,4 +93,4 @@ c = cpath.read_text()
 c = c.replace("        Card(\n          child: Padding(\n            padding: const EdgeInsets.all(16),", "        Card(\n          elevation: 0,\n          color: const Color(0xFFF4EEFF),\n          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24), side: const BorderSide(color: Color(0xFFE1D2FF))),\n          child: Padding(\n            padding: const EdgeInsets.all(18),", 1)
 cpath.write_text(c)
 
-# Idempotent visual patch: one header, dark gradient, modern cards.
+# Idempotent visual patch.
