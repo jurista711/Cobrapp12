@@ -259,8 +259,9 @@ class _HomePageState extends State<HomePage> {
       case 6: return const ReceiptsPage();
       case 7: return const RoutesPage();
       case 8: return const ReportsPage();
-      case 9: return const CalculatorPage();
-      case 10: return const SettingsPage();
+      case 9: return const PortfolioPage();
+      case 10: return const CalculatorPage();
+      case 11: return const SettingsPage();
       default: return const DashboardPage();
     }
   }
@@ -286,6 +287,7 @@ class _HomePageState extends State<HomePage> {
           NavigationDrawerDestination(icon:Icon(Icons.receipt_long_outlined),selectedIcon:Icon(Icons.receipt_long),label:Text('Recibos')),
           NavigationDrawerDestination(icon:Icon(Icons.route_outlined),selectedIcon:Icon(Icons.route),label:Text('Rotas')),
           NavigationDrawerDestination(icon:Icon(Icons.analytics_outlined),selectedIcon:Icon(Icons.analytics),label:Text('Relatórios')),
+          NavigationDrawerDestination(icon:Icon(Icons.account_balance_outlined),selectedIcon:Icon(Icons.account_balance),label:Text('Gestão da Carteira')),
           NavigationDrawerDestination(icon:Icon(Icons.calculate_outlined),selectedIcon:Icon(Icons.calculate),label:Text('Calculadora')),
           NavigationDrawerDestination(icon:Icon(Icons.settings_outlined),selectedIcon:Icon(Icons.settings),label:Text('Configurações')),
         ],

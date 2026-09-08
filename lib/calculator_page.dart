@@ -118,8 +118,11 @@ class _CalculatorPageState extends State<CalculatorPage> {
         ),
         const SizedBox(height: 16),
         Card(
+          elevation: 0,
+          color: const Color(0xFFF4EEFF),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24), side: const BorderSide(color: Color(0xFFE1D2FF))),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(18),
             child: Column(
               children: [
                 TextField(
