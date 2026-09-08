@@ -70,7 +70,6 @@ new_nav = """      bottomNavigationBar:NavigationBar(
         destinations:const ["""
 s = s.replace(old_nav, new_nav, 1)
 
-# Remove the second header from DashboardPage. HomePage already supplies the single header.
 pattern = r"""            SliverAppBar\(\n              pinned: true,\n              title: const Text\('Roots Cobrança', style: TextStyle\(fontWeight: FontWeight\.w800\)\),\n              actions: \[\n                IconButton\(\n                  tooltip: 'Sair',\n                  onPressed: \(\) => CobrAppRepository\(\)\.db\.auth\.signOut\(\),\n                  icon: const Icon\(Icons\.logout\),\n                \),\n              \],\n            \),\n"""
 s = re.sub(pattern, '', s, count=1)
 
@@ -82,9 +81,10 @@ s = s.replace("const Text('Migração Supabase', style: TextStyle(fontSize: 18, 
 s = s.replace("    return Card(\n      child: Padding(\n        padding: const EdgeInsets.all(14),", "    return Card(clipBehavior: Clip.antiAlias, color: const Color(0xFF17102F), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22), side: const BorderSide(color: Color(0xFF3B1F6B))),\n      child: Padding(\n        padding: const EdgeInsets.all(16),", 1)
 s = s.replace("CircleAvatar(child: Icon(icon, size: 20)),", "CircleAvatar(backgroundColor: const Color(0xFF5B21B6), child: Icon(icon, size: 20, color: Colors.white)),", 1)
 
-# The visual wrapper adds a Container around DashboardPage's CustomScrollView.
-# Make sure both the CustomScrollView and the outer Container are closed.
 s = s.replace("          ],\n        );\n      },\n    );\n  }\n}\n\nclass ReportsPage", "          ],\n        ),\n        );\n      },\n    );\n  }\n}\n\nclass ReportsPage", 1)
+
+# Remove the now-unused color scheme local from HomePage.
+s = s.replace("    final cs = Theme.of(context).colorScheme;\n", "", 1)
 
 p.write_text(s)
 
@@ -93,4 +93,4 @@ c = cpath.read_text()
 c = c.replace("        Card(\n          child: Padding(\n            padding: const EdgeInsets.all(16),", "        Card(\n          elevation: 0,\n          color: const Color(0xFFF4EEFF),\n          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24), side: const BorderSide(color: Color(0xFFE1D2FF))),\n          child: Padding(\n            padding: const EdgeInsets.all(18),", 1)
 cpath.write_text(c)
 
-# Keep this script idempotent; the current main.dart already contains the visual wrapper fix.
+# Idempotent visual patch: one header, dark gradient, modern cards.
