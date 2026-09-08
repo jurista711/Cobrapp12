@@ -4,6 +4,12 @@ import re
 p = Path('lib/main.dart')
 s = p.read_text()
 
+# The calculator and the app use pt_BR DateFormat/NumberFormat.
+# Initialize intl locale data before the first widget build so locale-specific
+# formatting does not replace the calculator body with ErrorWidget.
+s = s.replace("import 'package:intl/intl.dart';", "import 'package:intl/date_symbol_data_local.dart';\nimport 'package:intl/intl.dart';", 1)
+s = s.replace("  await initSupabase();", "  await initializeDateFormatting('pt_BR', null);\n  await initSupabase();", 1)
+
 old_theme = """      theme: ThemeData(
         useMaterial3: true,
         fontFamily: 'Nunito',
