@@ -81,6 +81,11 @@ s = s.replace("Card(\n                    child: Padding(\n                     
 s = s.replace("const Text('Migração Supabase', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),", "const Row(children:[Icon(Icons.cloud_done_rounded,color:Color(0xFF22C55E)),SizedBox(width:10),Text('Migração Supabase', style: TextStyle(fontSize: 19, fontWeight: FontWeight.w900))]),", 1)
 s = s.replace("    return Card(\n      child: Padding(\n        padding: const EdgeInsets.all(14),", "    return Card(clipBehavior: Clip.antiAlias, color: const Color(0xFF17102F), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22), side: const BorderSide(color: Color(0xFF3B1F6B))),\n      child: Padding(\n        padding: const EdgeInsets.all(16),", 1)
 s = s.replace("CircleAvatar(child: Icon(icon, size: 20)),", "CircleAvatar(backgroundColor: const Color(0xFF5B21B6), child: Icon(icon, size: 20, color: Colors.white)),", 1)
+
+# The visual wrapper adds a Container around DashboardPage's CustomScrollView.
+# Make sure both the CustomScrollView and the outer Container are closed.
+s = s.replace("          ],\n        );\n      },\n    );\n  }\n}\n\nclass ReportsPage", "          ],\n        ),\n        );\n      },\n    );\n  }\n}\n\nclass ReportsPage", 1)
+
 p.write_text(s)
 
 cpath = Path('lib/calculator_page.dart')
