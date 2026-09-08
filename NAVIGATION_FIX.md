@@ -1,10 +1,11 @@
-# Roots Cobrança — correção de navegação
+# Roots Cobrança — atualização visual
 
-Correções aplicadas no menu lateral:
-- Gestão da Carteira
-- Calculadora
-- Configurações
+Correções de navegação e sintaxe mantidas.
 
-A Calculadora mantém o acabamento visual violeta/lavanda.
-
-A Gestão da Carteira foi reescrita para eliminar os erros de sintaxe que estavam causando a cascata de erros no `flutter analyze`.
+Atualização visual solicitada:
+- fundo roxo escuro premium
+- gradiente roxo, rosa e vermelho
+- cartões arredondados
+- detalhes verdes para sucesso
+- cabeçalho único
+- navegação inferior moderna
