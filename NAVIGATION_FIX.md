@@ -1,9 +1,3 @@
-# Roots Cobrança — visual moderno aplicado
+# Roots Cobrança — atualização visual definitiva
 
-Atualização visual do aplicativo:
-- fundo roxo escuro premium
-- gradientes violeta, rosa e vermelho
-- cartões modernos e arredondados
-- detalhes verdes para sucesso
-- cabeçalho único sem duplicação
-- navegação inferior moderna
+Patch visual definitivo: roxo escuro, violeta, rosa, vermelho e detalhes verdes; cabeçalho único e cartões arredondados.
