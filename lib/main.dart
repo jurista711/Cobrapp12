@@ -111,8 +111,27 @@ class CobrApp extends StatelessWidget {
       title: 'Roots Cobrança',
       theme: ThemeData(
         useMaterial3: true,
+        brightness: Brightness.dark,
         fontFamily: 'Nunito',
-        colorSchemeSeed: const Color(0xFF7C3AED),
+        scaffoldBackgroundColor: const Color(0xFF0A0618),
+        colorScheme: const ColorScheme.dark(
+          primary: Color(0xFF8B5CF6),
+          onPrimary: Colors.white,
+          secondary: Color(0xFFEC4899),
+          onSecondary: Colors.white,
+          tertiary: Color(0xFFEF4444),
+          onTertiary: Colors.white,
+          surface: Color(0xFF120A2B),
+          onSurface: Color(0xFFF8F5FF),
+          error: Color(0xFFFF5252),
+          onError: Colors.white,
+        ),
+        cardTheme: CardThemeData(
+          color: const Color(0xFF17102F),
+          elevation: 0,
+          margin: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+        ),
       ),
       home: const AuthGate(),
     );
@@ -292,9 +311,36 @@ class _HomePageState extends State<HomePage> {
           NavigationDrawerDestination(icon:Icon(Icons.settings_outlined),selectedIcon:Icon(Icons.settings),label:Text('Configurações')),
         ],
       ),
-      appBar: AppBar(title:const Text('Roots Cobrança',style:TextStyle(fontWeight:FontWeight.w900)),actions:[IconButton(tooltip:'Sair',onPressed:()=>CobrAppRepository().db.auth.signOut(),icon:const Icon(Icons.logout))]),
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
+        titleSpacing: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF4C1D95), Color(0xFF7C3AED), Color(0xFFBE185D), Color(0xFFEF233C)],
+            ),
+          ),
+        ),
+        title: Row(children:[
+          Container(width:38,height:38,decoration:BoxDecoration(borderRadius:BorderRadius.circular(13),gradient:const LinearGradient(colors:[Color(0xFFA855F7),Color(0xFFEC4899)])),child:const Icon(Icons.account_balance_wallet_rounded,color:Colors.white,size:22)),
+          const SizedBox(width:11),
+          const Text('Roots Cobrança',style:TextStyle(fontWeight:FontWeight.w900,fontSize:21)),
+        ]),
+        actions:[IconButton(tooltip:'Sair',onPressed:()=>CobrAppRepository().db.auth.signOut(),icon:const Icon(Icons.logout_rounded))],
+      ),
       body:SafeArea(child:page()),
-      bottomNavigationBar:NavigationBar(selectedIndex:tab>4?0:tab,onDestinationSelected:(index)=>setState(()=>tab=index),indicatorColor:cs.primaryContainer,destinations:const [
+      bottomNavigationBar:NavigationBar(
+        selectedIndex:tab>4?0:tab,
+        onDestinationSelected:(index)=>setState(()=>tab=index),
+        backgroundColor:const Color(0xFF120A2B),
+        elevation:12,
+        indicatorColor:const Color(0xFF9D174D),
+        labelTextStyle:const WidgetStatePropertyAll(TextStyle(fontWeight:FontWeight.w700)),
+        destinations:const [
         NavigationDestination(icon:Icon(Icons.dashboard_outlined),selectedIcon:Icon(Icons.dashboard),label:'Início'),
         NavigationDestination(icon:Icon(Icons.people_outline),selectedIcon:Icon(Icons.people),label:'Clientes'),
         NavigationDestination(icon:Icon(Icons.account_balance_wallet_outlined),selectedIcon:Icon(Icons.account_balance_wallet),label:'Empréstimos'),
@@ -313,12 +359,12 @@ class StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Card(clipBehavior: Clip.antiAlias, color: const Color(0xFF17102F), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22), side: const BorderSide(color: Color(0xFF3B1F6B))),
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            CircleAvatar(child: Icon(icon, size: 20)),
+            CircleAvatar(backgroundColor: const Color(0xFF5B21B6), child: Icon(icon, size: 20, color: Colors.white)),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
@@ -352,24 +398,17 @@ class DashboardPage extends StatelessWidget {
           return Center(child: Text('Erro: ${snapshot.error}'));
         }
         final x = snapshot.data ?? <String, dynamic>{};
-        return CustomScrollView(
+        return Container(
+          decoration: const BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter,end: Alignment.bottomCenter,colors: [Color(0xFF160A31), Color(0xFF0A0618)])),
+          child: CustomScrollView(
           slivers: [
-            SliverAppBar(
-              pinned: true,
-              title: const Text('Roots Cobrança', style: TextStyle(fontWeight: FontWeight.w800)),
-              actions: [
-                IconButton(
-                  tooltip: 'Sair',
-                  onPressed: () => CobrAppRepository().db.auth.signOut(),
-                  icon: const Icon(Icons.logout),
-                ),
-              ],
-            ),
             SliverPadding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
-                  Text('Resumo', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+                  Text('Resumo', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900, color: Colors.white)),
+                  const SizedBox(height: 7),
+                  Container(width:125,height:5,decoration:BoxDecoration(borderRadius:BorderRadius.circular(99),gradient:const LinearGradient(colors:[Color(0xFFEC4899),Color(0xFF8B5CF6)]))),
                   const SizedBox(height: 14),
                   Row(children: [
                     Expanded(child: StatCard(label: 'Clientes', value: '${x['customers'] ?? 0}', icon: Icons.people)),
@@ -389,13 +428,13 @@ class DashboardPage extends StatelessWidget {
                     Expanded(child: StatCard(label: 'Em atraso', value: money(x['overdue']), icon: Icons.warning_amber_rounded)),
                   ]),
                   const SizedBox(height: 22),
-                  Card(
+                  Card(clipBehavior: Clip.antiAlias, color: const Color(0xFF21113F), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24), side: const BorderSide(color: Color(0xFF7C3AED))),
                     child: Padding(
-                      padding: const EdgeInsets.all(18),
+                      padding: const EdgeInsets.all(20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Migração Supabase', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                          const Row(children:[Icon(Icons.cloud_done_rounded,color:Color(0xFF22C55E)),SizedBox(width:10),Text('Migração Supabase', style: TextStyle(fontSize: 19, fontWeight: FontWeight.w900))]),
                           const SizedBox(height: 8),
                           Text('Autenticação, banco de dados e armazenamento estão preparados para substituir o Firebase.', style: Theme.of(context).textTheme.bodyMedium),
                         ],
