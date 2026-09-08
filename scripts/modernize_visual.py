@@ -92,3 +92,5 @@ cpath = Path('lib/calculator_page.dart')
 c = cpath.read_text()
 c = c.replace("        Card(\n          child: Padding(\n            padding: const EdgeInsets.all(16),", "        Card(\n          elevation: 0,\n          color: const Color(0xFFF4EEFF),\n          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24), side: const BorderSide(color: Color(0xFFE1D2FF))),\n          child: Padding(\n            padding: const EdgeInsets.all(18),", 1)
 cpath.write_text(c)
+
+# Keep this script idempotent; the current main.dart already contains the visual wrapper fix.
