@@ -1,5 +1,7 @@
 name: Patch navigation
 on: push
+permissions:
+  contents: write
 jobs:
   patch:
     runs-on: ubuntu-latest
