@@ -26,5 +26,7 @@ jobs:
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add lib/main.dart lib/calculator_page.dart
-          git diff --cached --quiet || git commit -m "fix: corrigir navegação e calculadora [navigation-fix]"
-          git diff --cached --quiet || git push
+          if ! git diff --cached --quiet; then
+            git commit -m "fix: corrigir navegação e calculadora [navigation-fix]"
+            git push
+          fi
