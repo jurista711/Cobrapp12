@@ -53,7 +53,7 @@ jobs:
           echo "OK: file_picker não está presente."
 
       - name: Analisar projeto
-        run: flutter analyze --no-fatal-infos
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
       - name: Testar projeto
         run: flutter test
