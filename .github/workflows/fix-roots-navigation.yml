@@ -2,12 +2,15 @@ name: Corrigir navegação e visual da calculadora
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
 
 permissions:
   contents: write
 
 jobs:
   fix:
+    if: ${{ !contains(github.event.head_commit.message, '[navigation-fix]') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
