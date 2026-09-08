@@ -71,17 +71,6 @@ class _CalculatorPageState extends State<CalculatorPage> {
 
   int? _integer(TextEditingController c) => int.tryParse(c.text.trim());
 
-  String get _interestLabel {
-    switch (_interestMode) {
-      case _InterestMode.principal:
-        return 'Capital inicial';
-      case _InterestMode.perInstallment:
-        return 'Cada parcela';
-      case _InterestMode.compoundBank:
-        return 'Juros compostos bancários';
-    }
-  }
-
   String get _frequencyLabel {
     switch (_frequency) {
       case _PaymentFrequency.daily:
