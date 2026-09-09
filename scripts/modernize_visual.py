@@ -5,10 +5,29 @@ p = Path('lib/main.dart')
 s = p.read_text()
 
 # The calculator and the app use pt_BR DateFormat/NumberFormat.
-# Initialize intl locale data before the first widget build so locale-specific
-# formatting does not replace the calculator body with ErrorWidget.
-s = s.replace("import 'package:intl/intl.dart';", "import 'package:intl/date_symbol_data_local.dart';\nimport 'package:intl/intl.dart';", 1)
-s = s.replace("  await initSupabase();", "  await initializeDateFormatting('pt_BR', null);\n  await initSupabase();", 1)
+# Keep exactly one locale-data import and one initialization call.
+locale_import = "import 'package:intl/date_symbol_data_local.dart';"
+intl_import = "import 'package:intl/intl.dart';"
+locale_init = "  await initializeDateFormatting('pt_BR', null);"
+
+# Remove duplicates first, preserving a single canonical occurrence.
+s = re.sub(
+    r"(?:import 'package:intl/date_symbol_data_local\.dart';\r?\n)+",
+    locale_import + "\n",
+    s,
+    count=1,
+)
+if locale_import not in s:
+    s = s.replace(intl_import, locale_import + "\n" + intl_import, 1)
+
+s = re.sub(
+    r"(?:  await initializeDateFormatting\('pt_BR', null\);\r?\n)+",
+    locale_init + "\n",
+    s,
+    count=1,
+)
+if locale_init not in s:
+    s = s.replace("  await initSupabase();", locale_init + "\n  await initSupabase();", 1)
 
 old_theme = """      theme: ThemeData(
         useMaterial3: true,
