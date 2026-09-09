@@ -1,7 +1,11 @@
 name: Patch navigation
-on: push
+
+on:
+  workflow_dispatch:
+
 permissions:
   contents: write
+
 jobs:
   patch:
     runs-on: ubuntu-latest
