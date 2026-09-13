@@ -7,6 +7,8 @@ import 'core/supabase_config.dart';
 import 'data/auth_repository.dart';
 import 'legacy_app.dart' as legacy;
 
+export 'legacy_app.dart' show StatCard;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('pt_BR', null);
@@ -103,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
       await action();
     } on AuthException catch (e) {
       if (mounted) setState(() => error = e.message);
-    } catch (e) {
+    } catch (_) {
       if (mounted) setState(() => error = 'Não foi possível concluir a operação.');
     } finally {
       if (mounted) setState(() => loading = false);
