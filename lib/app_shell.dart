@@ -121,6 +121,96 @@ class _HomeShellState extends State<HomeShell> {
     }
   }
 
+  bool get _useEnhancedButtons =>
+      const {1, 2, 4, 5, 7, 8, 11, 12, 13, 14, 15, 16}.contains(tab);
+
+  Widget _withEnhancedButtons(Widget child) {
+    if (!_useEnhancedButtons) return child;
+
+    final base = Theme.of(context);
+    final rounded = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(14),
+    );
+
+    return Theme(
+      data: base.copyWith(
+        filledButtonTheme: FilledButtonThemeData(
+          style: ButtonStyle(
+            backgroundColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.disabled)) {
+                return const Color(0xFF3B2A5A);
+              }
+              if (states.contains(WidgetState.pressed)) {
+                return const Color(0xFFA855F7);
+              }
+              return const Color(0xFF7C3AED);
+            }),
+            foregroundColor: const WidgetStatePropertyAll(Colors.white),
+            overlayColor: const WidgetStatePropertyAll(Color(0x33EC4899)),
+            elevation: const WidgetStatePropertyAll(2),
+            padding: const WidgetStatePropertyAll(
+              EdgeInsets.symmetric(horizontal: 18, vertical: 13),
+            ),
+            shape: WidgetStatePropertyAll(rounded),
+            textStyle: const WidgetStatePropertyAll(
+              TextStyle(fontWeight: FontWeight.w800),
+            ),
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(
+            backgroundColor: const WidgetStatePropertyAll(Color(0xFF8B5CF6)),
+            foregroundColor: const WidgetStatePropertyAll(Colors.white),
+            overlayColor: const WidgetStatePropertyAll(Color(0x33EC4899)),
+            elevation: const WidgetStatePropertyAll(3),
+            shape: WidgetStatePropertyAll(rounded),
+            textStyle: const WidgetStatePropertyAll(
+              TextStyle(fontWeight: FontWeight.w800),
+            ),
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: ButtonStyle(
+            foregroundColor: const WidgetStatePropertyAll(Color(0xFFF0ABFC)),
+            backgroundColor: const WidgetStatePropertyAll(Color(0x221E1B4B)),
+            side: WidgetStateProperty.resolveWith((states) {
+              final color = states.contains(WidgetState.pressed)
+                  ? const Color(0xFFF472B6)
+                  : const Color(0xFFEC4899);
+              return BorderSide(color: color, width: 1.4);
+            }),
+            overlayColor: const WidgetStatePropertyAll(Color(0x337C3AED)),
+            padding: const WidgetStatePropertyAll(
+              EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            ),
+            shape: WidgetStatePropertyAll(rounded),
+            textStyle: const WidgetStatePropertyAll(
+              TextStyle(fontWeight: FontWeight.w700),
+            ),
+          ),
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: ButtonStyle(
+            foregroundColor: const WidgetStatePropertyAll(Color(0xFFC4B5FD)),
+            overlayColor: const WidgetStatePropertyAll(Color(0x227C3AED)),
+            shape: WidgetStatePropertyAll(rounded),
+            textStyle: const WidgetStatePropertyAll(
+              TextStyle(fontWeight: FontWeight.w700),
+            ),
+          ),
+        ),
+        iconButtonTheme: IconButtonThemeData(
+          style: ButtonStyle(
+            foregroundColor: const WidgetStatePropertyAll(Color(0xFFF0ABFC)),
+            overlayColor: const WidgetStatePropertyAll(Color(0x227C3AED)),
+            shape: WidgetStatePropertyAll(rounded),
+          ),
+        ),
+      ),
+      child: child,
+    );
+  }
+
   void select(int index) {
     Navigator.of(context).pop();
     setState(() => tab = index);
@@ -188,7 +278,7 @@ class _HomeShellState extends State<HomeShell> {
           NavigationDrawerDestination(icon: Icon(Icons.account_balance_wallet_outlined), selectedIcon: Icon(Icons.account_balance_wallet), label: Text('Empréstimos')),
           NavigationDrawerDestination(icon: Icon(Icons.event_available_outlined), selectedIcon: Icon(Icons.event_available), label: Text('Cobranças')),
           NavigationDrawerDestination(icon: Icon(Icons.money_off_outlined), selectedIcon: Icon(Icons.money_off), label: Text('Despesas')),
-          Divider(indent: 16, endIndent: 16),
+          Divider(indent:16,endIndent:16),
           NavigationDrawerDestination(icon: Icon(Icons.payments_outlined), selectedIcon: Icon(Icons.payments), label: Text('Pagamentos')),
           NavigationDrawerDestination(icon: Icon(Icons.receipt_long_outlined), selectedIcon: Icon(Icons.receipt_long), label: Text('Recibos')),
           NavigationDrawerDestination(icon: Icon(Icons.route_outlined), selectedIcon: Icon(Icons.route), label: Text('Rotas')),
@@ -242,7 +332,7 @@ class _HomeShellState extends State<HomeShell> {
           IconButton(tooltip: 'Sair', onPressed: () => auth.signOut(), icon: const Icon(Icons.logout_rounded)),
         ],
       ),
-      body: SafeArea(child: page()),
+      body: SafeArea(child: _withEnhancedButtons(page())),
       bottomNavigationBar: NavigationBar(
         selectedIndex: tab > 4 ? 0 : tab,
         onDestinationSelected: (index) => setState(() => tab = index),
