@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'app_shell.dart';
 import 'core/supabase_config.dart';
 import 'data/auth_repository.dart';
-import 'legacy_app.dart' as legacy;
 
 export 'legacy_app.dart' show StatCard;
 
@@ -45,7 +45,9 @@ class RootsCobrancaApp extends StatelessWidget {
           color: const Color(0xFF17102F),
           elevation: 0,
           margin: EdgeInsets.zero,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(22),
+          ),
         ),
       ),
       home: const AuthGate(),
@@ -69,7 +71,7 @@ class AuthGate extends StatelessWidget {
             message: 'O acesso Web é exclusivo do plano Premium.',
           );
         }
-        return const legacy.HomePage();
+        return const HomeShell();
       },
     );
   }
@@ -95,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  Future<void> _run(Future<void> Function() action) async {
+  Future<void> runAction(Future<void> Function() action) async {
     if (loading) return;
     setState(() {
       loading = true;
@@ -106,7 +108,9 @@ class _LoginPageState extends State<LoginPage> {
     } on AuthException catch (e) {
       if (mounted) setState(() => error = e.message);
     } catch (_) {
-      if (mounted) setState(() => error = 'Não foi possível concluir a operação.');
+      if (mounted) {
+        setState(() => error = 'Não foi possível concluir a operação.');
+      }
     } finally {
       if (mounted) setState(() => loading = false);
     }
@@ -117,22 +121,30 @@ class _LoginPageState extends State<LoginPage> {
       setState(() => error = 'Informe e-mail e senha.');
       return;
     }
-    await _run(() async {
+    await runAction(() async {
       await AuthRepository().signIn(email.text.trim(), password.text);
     });
   }
 
   Future<void> google() async {
-    await _run(() async {
+    await runAction(() async {
       final started = await AuthRepository().signInWithGoogle();
-      if (!started) throw const AuthException('Não foi possível iniciar o login com Google.');
+      if (!started) {
+        throw const AuthException(
+          'Não foi possível iniciar o login com Google.',
+        );
+      }
     });
   }
 
   Future<void> apple() async {
-    await _run(() async {
+    await runAction(() async {
       final started = await AuthRepository().signInWithApple();
-      if (!started) throw const AuthException('Não foi possível iniciar o login com Apple.');
+      if (!started) {
+        throw const AuthException(
+          'Não foi possível iniciar o login com Apple.',
+        );
+      }
     });
   }
 
@@ -158,18 +170,21 @@ class _LoginPageState extends State<LoginPage> {
               child: const Text('Cancelar'),
             ),
             FilledButton(
-              onPressed: () => Navigator.pop(dialogContext, controller.text.trim()),
+              onPressed: () =>
+                  Navigator.pop(dialogContext, controller.text.trim()),
               child: const Text('Enviar link'),
             ),
           ],
         ),
       );
       if (value == null || value.isEmpty || !mounted) return;
-      await _run(() async {
+      await runAction(() async {
         await AuthRepository().resetPassword(value);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Link de redefinição enviado por e-mail.')),
+            const SnackBar(
+              content: Text('Link de redefinição enviado por e-mail.'),
+            ),
           );
         }
       });
@@ -180,7 +195,9 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> createAccount() async {
     await Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => const CreateAccountPage()),
+      MaterialPageRoute<void>(
+        builder: (_) => const CreateAccountPage(),
+      ),
     );
   }
 
@@ -195,11 +212,17 @@ class _LoginPageState extends State<LoginPage> {
               constraints: const BoxConstraints(maxWidth: 430),
               child: Column(
                 children: [
-                  const Icon(Icons.account_balance_wallet_rounded, size: 76),
+                  const Icon(
+                    Icons.account_balance_wallet_rounded,
+                    size: 76,
+                  ),
                   const SizedBox(height: 12),
                   const Text(
                     'Roots Cobrança',
-                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.w800),
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                   const SizedBox(height: 28),
                   TextField(
@@ -227,7 +250,9 @@ class _LoginPageState extends State<LoginPage> {
                       padding: const EdgeInsets.only(top: 12),
                       child: Text(
                         error!,
-                        style: TextStyle(color: Theme.of(context).colorScheme.error),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -323,7 +348,9 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   }
 
   Future<void> create() async {
-    if (email.text.trim().isEmpty || password.text.isEmpty || companyName.text.trim().isEmpty) {
+    if (email.text.trim().isEmpty ||
+        password.text.isEmpty ||
+        companyName.text.trim().isEmpty) {
       setState(() => error = 'Informe e-mail, senha e nome da empresa.');
       return;
     }
@@ -344,7 +371,11 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       if (!mounted) return;
       if (result.session == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Conta criada. Verifique seu e-mail para concluir o acesso.')),
+          const SnackBar(
+            content: Text(
+              'Conta criada. Verifique seu e-mail para concluir o acesso.',
+            ),
+          ),
         );
       }
       Navigator.pop(context);
@@ -370,27 +401,90 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text('Acesso', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+                  const Text(
+                    'Acesso',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
                   const SizedBox(height: 12),
-                  TextField(controller: email, keyboardType: TextInputType.emailAddress, decoration: const InputDecoration(labelText: 'E-mail', border: OutlineInputBorder())),
+                  TextField(
+                    controller: email,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: const InputDecoration(
+                      labelText: 'E-mail',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
                   const SizedBox(height: 12),
-                  TextField(controller: password, obscureText: true, decoration: const InputDecoration(labelText: 'Senha', border: OutlineInputBorder())),
+                  TextField(
+                    controller: password,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Senha',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
                   const SizedBox(height: 22),
-                  const Text('Dados básicos da empresa', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+                  const Text(
+                    'Dados básicos da empresa',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
                   const SizedBox(height: 12),
-                  TextField(controller: companyName, decoration: const InputDecoration(labelText: 'Nome da empresa', border: OutlineInputBorder())),
+                  TextField(
+                    controller: companyName,
+                    decoration: const InputDecoration(
+                      labelText: 'Nome da empresa',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
                   const SizedBox(height: 12),
-                  TextField(controller: companyDocument, decoration: const InputDecoration(labelText: 'CNPJ', border: OutlineInputBorder())),
+                  TextField(
+                    controller: companyDocument,
+                    decoration: const InputDecoration(
+                      labelText: 'CNPJ',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
                   const SizedBox(height: 12),
-                  TextField(controller: companyAddress, decoration: const InputDecoration(labelText: 'Endereço', border: OutlineInputBorder())),
+                  TextField(
+                    controller: companyAddress,
+                    decoration: const InputDecoration(
+                      labelText: 'Endereço',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
                   const SizedBox(height: 12),
-                  TextField(controller: companyPhone, keyboardType: TextInputType.phone, decoration: const InputDecoration(labelText: 'Telefone', border: OutlineInputBorder())),
+                  TextField(
+                    controller: companyPhone,
+                    keyboardType: TextInputType.phone,
+                    decoration: const InputDecoration(
+                      labelText: 'Telefone',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
                   const SizedBox(height: 12),
-                  TextField(controller: companyEmail, keyboardType: TextInputType.emailAddress, decoration: const InputDecoration(labelText: 'E-mail da empresa', border: OutlineInputBorder())),
+                  TextField(
+                    controller: companyEmail,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: const InputDecoration(
+                      labelText: 'E-mail da empresa',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
                   if (error != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 12),
-                      child: Text(error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                      child: Text(
+                        error!,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                      ),
                     ),
                   const SizedBox(height: 20),
                   SizedBox(
@@ -432,7 +526,13 @@ class AccessDeniedPage extends StatelessWidget {
                     children: [
                       const Icon(Icons.lock_outline, size: 56),
                       const SizedBox(height: 16),
-                      const Text('Acesso negado', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
+                      const Text(
+                        'Acesso negado',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
                       const SizedBox(height: 10),
                       Text(message, textAlign: TextAlign.center),
                       const SizedBox(height: 20),
