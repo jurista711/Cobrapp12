@@ -13,6 +13,7 @@ import 'notifications_page.dart';
 import 'notifications_repository.dart';
 import 'payments_page.dart';
 import 'portfolio_page.dart';
+import 'premium_page.dart';
 import 'reports_page.dart';
 import 'routes_tags_page.dart';
 import 'support_help_page.dart';
@@ -111,6 +112,10 @@ class _HomeShellState extends State<HomeShell> {
         );
       case 15:
         return const SupportHelpPage();
+      case 16:
+        return auth.isCollaborator
+            ? denied('assinatura Premium')
+            : const PremiumPage();
       default:
         return const legacy.DashboardPage();
     }
@@ -178,87 +183,24 @@ class _HomeShellState extends State<HomeShell> {
           ),
         ),
         children: const [
-          NavigationDrawerDestination(
-            icon: Icon(Icons.dashboard_outlined),
-            selectedIcon: Icon(Icons.dashboard),
-            label: Text('Início'),
-          ),
-          NavigationDrawerDestination(
-            icon: Icon(Icons.people_outline),
-            selectedIcon: Icon(Icons.people),
-            label: Text('Clientes'),
-          ),
-          NavigationDrawerDestination(
-            icon: Icon(Icons.account_balance_wallet_outlined),
-            selectedIcon: Icon(Icons.account_balance_wallet),
-            label: Text('Empréstimos'),
-          ),
-          NavigationDrawerDestination(
-            icon: Icon(Icons.event_available_outlined),
-            selectedIcon: Icon(Icons.event_available),
-            label: Text('Cobranças'),
-          ),
-          NavigationDrawerDestination(
-            icon: Icon(Icons.money_off_outlined),
-            selectedIcon: Icon(Icons.money_off),
-            label: Text('Despesas'),
-          ),
+          NavigationDrawerDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: Text('Início')),
+          NavigationDrawerDestination(icon: Icon(Icons.people_outline), selectedIcon: Icon(Icons.people), label: Text('Clientes')),
+          NavigationDrawerDestination(icon: Icon(Icons.account_balance_wallet_outlined), selectedIcon: Icon(Icons.account_balance_wallet), label: Text('Empréstimos')),
+          NavigationDrawerDestination(icon: Icon(Icons.event_available_outlined), selectedIcon: Icon(Icons.event_available), label: Text('Cobranças')),
+          NavigationDrawerDestination(icon: Icon(Icons.money_off_outlined), selectedIcon: Icon(Icons.money_off), label: Text('Despesas')),
           Divider(indent: 16, endIndent: 16),
-          NavigationDrawerDestination(
-            icon: Icon(Icons.payments_outlined),
-            selectedIcon: Icon(Icons.payments),
-            label: Text('Pagamentos'),
-          ),
-          NavigationDrawerDestination(
-            icon: Icon(Icons.receipt_long_outlined),
-            selectedIcon: Icon(Icons.receipt_long),
-            label: Text('Recibos'),
-          ),
-          NavigationDrawerDestination(
-            icon: Icon(Icons.route_outlined),
-            selectedIcon: Icon(Icons.route),
-            label: Text('Rotas'),
-          ),
-          NavigationDrawerDestination(
-            icon: Icon(Icons.analytics_outlined),
-            selectedIcon: Icon(Icons.analytics),
-            label: Text('Relatórios'),
-          ),
-          NavigationDrawerDestination(
-            icon: Icon(Icons.account_balance_outlined),
-            selectedIcon: Icon(Icons.account_balance),
-            label: Text('Gestão da Carteira'),
-          ),
-          NavigationDrawerDestination(
-            icon: Icon(Icons.calculate_outlined),
-            selectedIcon: Icon(Icons.calculate),
-            label: Text('Calculadora'),
-          ),
-          NavigationDrawerDestination(
-            icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(Icons.settings),
-            label: Text('Configurações'),
-          ),
-          NavigationDrawerDestination(
-            icon: Icon(Icons.manage_accounts_outlined),
-            selectedIcon: Icon(Icons.manage_accounts),
-            label: Text('Colaboradores'),
-          ),
-          NavigationDrawerDestination(
-            icon: Icon(Icons.description_outlined),
-            selectedIcon: Icon(Icons.description),
-            label: Text('Documentos'),
-          ),
-          NavigationDrawerDestination(
-            icon: Icon(Icons.notifications_none_outlined),
-            selectedIcon: Icon(Icons.notifications),
-            label: Text('Notificações'),
-          ),
-          NavigationDrawerDestination(
-            icon: Icon(Icons.help_outline),
-            selectedIcon: Icon(Icons.help),
-            label: Text('Ajuda'),
-          ),
+          NavigationDrawerDestination(icon: Icon(Icons.payments_outlined), selectedIcon: Icon(Icons.payments), label: Text('Pagamentos')),
+          NavigationDrawerDestination(icon: Icon(Icons.receipt_long_outlined), selectedIcon: Icon(Icons.receipt_long), label: Text('Recibos')),
+          NavigationDrawerDestination(icon: Icon(Icons.route_outlined), selectedIcon: Icon(Icons.route), label: Text('Rotas')),
+          NavigationDrawerDestination(icon: Icon(Icons.analytics_outlined), selectedIcon: Icon(Icons.analytics), label: Text('Relatórios')),
+          NavigationDrawerDestination(icon: Icon(Icons.account_balance_outlined), selectedIcon: Icon(Icons.account_balance), label: Text('Gestão da Carteira')),
+          NavigationDrawerDestination(icon: Icon(Icons.calculate_outlined), selectedIcon: Icon(Icons.calculate), label: Text('Calculadora')),
+          NavigationDrawerDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: Text('Configurações')),
+          NavigationDrawerDestination(icon: Icon(Icons.manage_accounts_outlined), selectedIcon: Icon(Icons.manage_accounts), label: Text('Colaboradores')),
+          NavigationDrawerDestination(icon: Icon(Icons.description_outlined), selectedIcon: Icon(Icons.description), label: Text('Documentos')),
+          NavigationDrawerDestination(icon: Icon(Icons.notifications_none_outlined), selectedIcon: Icon(Icons.notifications), label: Text('Notificações')),
+          NavigationDrawerDestination(icon: Icon(Icons.help_outline), selectedIcon: Icon(Icons.help), label: Text('Ajuda')),
+          NavigationDrawerDestination(icon: Icon(Icons.workspace_premium_outlined), selectedIcon: Icon(Icons.workspace_premium), label: Text('Premium')),
         ],
       ),
       appBar: AppBar(
@@ -271,12 +213,7 @@ class _HomeShellState extends State<HomeShell> {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF4C1D95),
-                Color(0xFF7C3AED),
-                Color(0xFFBE185D),
-                Color(0xFFEF233C),
-              ],
+              colors: [Color(0xFF4C1D95), Color(0xFF7C3AED), Color(0xFFBE185D), Color(0xFFEF233C)],
             ),
           ),
         ),
@@ -287,30 +224,22 @@ class _HomeShellState extends State<HomeShell> {
               height: 38,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(13),
-                gradient: const LinearGradient(
-                  colors: [Color(0xFFA855F7), Color(0xFFEC4899)],
-                ),
+                gradient: const LinearGradient(colors: [Color(0xFFA855F7), Color(0xFFEC4899)]),
               ),
-              child: const Icon(
-                Icons.account_balance_wallet_rounded,
-                color: Colors.white,
-                size: 22,
-              ),
+              child: const Icon(Icons.account_balance_wallet_rounded, color: Colors.white, size: 22),
             ),
             const SizedBox(width: 11),
-            const Text(
-              'Roots Cobrança',
-              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 21),
-            ),
+            const Text('Roots Cobrança', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 21)),
           ],
         ),
         actions: [
-          notificationButton(),
           IconButton(
-            tooltip: 'Sair',
-            onPressed: () => auth.signOut(),
-            icon: const Icon(Icons.logout_rounded),
+            tooltip: 'Premium',
+            onPressed: auth.isCollaborator ? null : () => setState(() => tab = 16),
+            icon: const Icon(Icons.workspace_premium_outlined),
           ),
+          notificationButton(),
+          IconButton(tooltip: 'Sair', onPressed: () => auth.signOut(), icon: const Icon(Icons.logout_rounded)),
         ],
       ),
       body: SafeArea(child: page()),
@@ -320,35 +249,13 @@ class _HomeShellState extends State<HomeShell> {
         backgroundColor: const Color(0xFF120A2B),
         elevation: 12,
         indicatorColor: const Color(0xFF9D174D),
-        labelTextStyle: const WidgetStatePropertyAll(
-          TextStyle(fontWeight: FontWeight.w700),
-        ),
+        labelTextStyle: const WidgetStatePropertyAll(TextStyle(fontWeight: FontWeight.w700)),
         destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.dashboard_outlined),
-            selectedIcon: Icon(Icons.dashboard),
-            label: 'Início',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.people_outline),
-            selectedIcon: Icon(Icons.people),
-            label: 'Clientes',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.account_balance_wallet_outlined),
-            selectedIcon: Icon(Icons.account_balance_wallet),
-            label: 'Empréstimos',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.event_available_outlined),
-            selectedIcon: Icon(Icons.event_available),
-            label: 'Cobranças',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.money_off_outlined),
-            selectedIcon: Icon(Icons.money_off),
-            label: 'Despesas',
-          ),
+          NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: 'Início'),
+          NavigationDestination(icon: Icon(Icons.people_outline), selectedIcon: Icon(Icons.people), label: 'Clientes'),
+          NavigationDestination(icon: Icon(Icons.account_balance_wallet_outlined), selectedIcon: Icon(Icons.account_balance_wallet), label: 'Empréstimos'),
+          NavigationDestination(icon: Icon(Icons.event_available_outlined), selectedIcon: Icon(Icons.event_available), label: 'Cobranças'),
+          NavigationDestination(icon: Icon(Icons.money_off_outlined), selectedIcon: Icon(Icons.money_off), label: 'Despesas'),
         ],
       ),
     );
