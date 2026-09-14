@@ -15,6 +15,7 @@ import 'payments_page.dart';
 import 'portfolio_page.dart';
 import 'reports_page.dart';
 import 'routes_tags_page.dart';
+import 'support_help_page.dart';
 
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
@@ -108,6 +109,8 @@ class _HomeShellState extends State<HomeShell> {
           'payments',
           NotificationsPage(onChanged: _refreshUnread),
         );
+      case 15:
+        return const SupportHelpPage();
       default:
         return const legacy.DashboardPage();
     }
@@ -250,6 +253,11 @@ class _HomeShellState extends State<HomeShell> {
             icon: Icon(Icons.notifications_none_outlined),
             selectedIcon: Icon(Icons.notifications),
             label: Text('Notificações'),
+          ),
+          NavigationDrawerDestination(
+            icon: Icon(Icons.help_outline),
+            selectedIcon: Icon(Icons.help),
+            label: Text('Ajuda'),
           ),
         ],
       ),
