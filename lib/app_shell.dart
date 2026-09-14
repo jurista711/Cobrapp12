@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import 'calculator_page.dart';
 import 'customers_page.dart';
 import 'data/auth_repository.dart';
 import 'legacy_app.dart' as legacy;
+import 'portfolio_page.dart';
 
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
@@ -33,9 +35,9 @@ class _HomeShellState extends State<HomeShell> {
       case 8:
         return const legacy.ReportsPage();
       case 9:
-        return const legacy.PortfolioPage();
+        return const PortfolioPage();
       case 10:
-        return const legacy.CalculatorPage();
+        return const CalculatorPage();
       case 11:
         return const legacy.SettingsPage();
       default:
