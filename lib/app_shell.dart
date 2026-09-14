@@ -7,6 +7,7 @@ import 'legacy_app.dart' as legacy;
 import 'loans_page.dart';
 import 'payments_page.dart';
 import 'portfolio_page.dart';
+import 'reports_page.dart';
 
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
@@ -35,7 +36,7 @@ class _HomeShellState extends State<HomeShell> {
       case 7:
         return const legacy.RoutesPage();
       case 8:
-        return const legacy.ReportsPage();
+        return const ReportsPage();
       case 9:
         return const PortfolioPage();
       case 10:
