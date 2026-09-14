@@ -40,17 +40,28 @@ jobs:
 
       - name: Configurar assinatura fixa
         env:
-          KEYSTORE_BASE64: ${{ secrets.COBRAPP_KEYSTORE_BASE64 }}
-          STORE_PASSWORD: ${{ secrets.COBRAPP_STORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.COBRAPP_KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.COBRAPP_KEY_PASSWORD }}
+          KEYSTORE_BASE64_OLD: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD_OLD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS_OLD: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD_OLD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          KEYSTORE_BASE64_NEW: ${{ secrets.COBRAPP_KEYSTORE_BASE64 }}
+          STORE_PASSWORD_NEW: ${{ secrets.COBRAPP_STORE_PASSWORD }}
+          KEY_ALIAS_NEW: ${{ secrets.COBRAPP_KEY_ALIAS }}
+          KEY_PASSWORD_NEW: ${{ secrets.COBRAPP_KEY_PASSWORD }}
         run: |
+          KEYSTORE_BASE64="${KEYSTORE_BASE64_OLD:-$KEYSTORE_BASE64_NEW}"
+          STORE_PASSWORD="${STORE_PASSWORD_OLD:-$STORE_PASSWORD_NEW}"
+          KEY_ALIAS="${KEY_ALIAS_OLD:-$KEY_ALIAS_NEW}"
+          KEY_PASSWORD="${KEY_PASSWORD_OLD:-$KEY_PASSWORD_NEW}"
+
           if [ -z "$KEYSTORE_BASE64" ] || [ -z "$STORE_PASSWORD" ] || [ -z "$KEY_ALIAS" ] || [ -z "$KEY_PASSWORD" ]; then
             echo "ERRO: assinatura fixa não configurada nos GitHub Actions Secrets."
-            echo "Necessários: COBRAPP_KEYSTORE_BASE64, COBRAPP_STORE_PASSWORD, COBRAPP_KEY_ALIAS e COBRAPP_KEY_PASSWORD."
+            echo "Aceitos os nomes antigos ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD."
+            echo "Também são aceitos os nomes COBRAPP_* configurados anteriormente."
             exit 1
           fi
-          echo "$KEYSTORE_BASE64" | base64 --decode > android/app/upload-keystore.jks
+
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > android/app/upload-keystore.jks
           cat > android/key.properties <<EOF
           storePassword=$STORE_PASSWORD
           keyPassword=$KEY_PASSWORD
