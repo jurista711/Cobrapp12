@@ -38,6 +38,26 @@ jobs:
           yes | "$SDKMANAGER" --licenses > /dev/null || true
           "$SDKMANAGER" "platforms;android-36" "build-tools;36.0.0" "cmake;3.22.1"
 
+      - name: Configurar assinatura fixa
+        env:
+          KEYSTORE_BASE64: ${{ secrets.COBRAPP_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.COBRAPP_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.COBRAPP_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.COBRAPP_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ] || [ -z "$STORE_PASSWORD" ] || [ -z "$KEY_ALIAS" ] || [ -z "$KEY_PASSWORD" ]; then
+            echo "ERRO: assinatura fixa não configurada nos GitHub Actions Secrets."
+            echo "Necessários: COBRAPP_KEYSTORE_BASE64, COBRAPP_STORE_PASSWORD, COBRAPP_KEY_ALIAS e COBRAPP_KEY_PASSWORD."
+            exit 1
+          fi
+          echo "$KEYSTORE_BASE64" | base64 --decode > android/app/upload-keystore.jks
+          cat > android/key.properties <<EOF
+          storePassword=$STORE_PASSWORD
+          keyPassword=$KEY_PASSWORD
+          keyAlias=$KEY_ALIAS
+          storeFile=upload-keystore.jks
+          EOF
+
       - name: Limpar projeto
         run: flutter clean
 
