@@ -4,6 +4,7 @@ import 'calculator_page.dart';
 import 'collaborators_page.dart';
 import 'customers_page.dart';
 import 'data/auth_repository.dart';
+import 'expenses_page.dart';
 import 'legacy_app.dart' as legacy;
 import 'loans_page.dart';
 import 'payments_page.dart';
@@ -62,6 +63,8 @@ class _HomeShellState extends State<HomeShell> {
         return guarded('settings', const legacy.SettingsPage());
       case 12:
         return auth.isCollaborator ? denied('gerenciamento de colaboradores') : const CollaboratorsPage();
+      case 13:
+        return guarded('expenses', const ExpensesPage());
       default:
         return const legacy.DashboardPage();
     }
@@ -106,6 +109,7 @@ class _HomeShellState extends State<HomeShell> {
           NavigationDrawerDestination(icon: Icon(Icons.calculate_outlined), selectedIcon: Icon(Icons.calculate), label: Text('Calculadora')),
           NavigationDrawerDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: Text('Configurações')),
           NavigationDrawerDestination(icon: Icon(Icons.manage_accounts_outlined), selectedIcon: Icon(Icons.manage_accounts), label: Text('Colaboradores')),
+          NavigationDrawerDestination(icon: Icon(Icons.receipt_long_outlined), selectedIcon: Icon(Icons.receipt_long), label: Text('Despesas')),
         ],
       ),
       appBar: AppBar(
