@@ -1,10 +1,8 @@
-# Roots Cobrança
+# CobrApp Supabase
 
-Aplicativo Flutter integrado ao Supabase.
+Reconstrução do aplicativo CobrApp/PrestApp com Flutter e Supabase.
 
-## Etapas da planilha
-
-- Etapa 1: Autenticação e Acesso
-- Etapa 2: Gerenciamento de Clientes
-
-A configuração de build permanece no workflow `.github/workflows/build.yml`.
+- Supabase Auth
+- RLS por usuário
+- Clientes, empréstimos, cobranças e pagamentos
+- Relatórios, rotas, caixa e configurações
