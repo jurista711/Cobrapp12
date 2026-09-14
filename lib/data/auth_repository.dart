@@ -44,12 +44,41 @@ class AuthRepository {
         redirectTo: kIsWeb ? Uri.base.origin : 'cobrapp://login-callback/',
       );
 
+  bool get isCollaborator => currentUser?.appMetadata['collaborator'] == true;
+
+  String get effectiveOwnerId {
+    final user = currentUser;
+    if (user == null) throw StateError('Usuário não autenticado.');
+    return user.appMetadata['owner_id']?.toString() ?? user.id;
+  }
+
+  String get collaboratorRole =>
+      currentUser?.appMetadata['collaborator_role']?.toString() ?? 'owner';
+
+  Map<String, dynamic> get collaboratorPermissions {
+    final raw = currentUser?.appMetadata['permissions'];
+    return raw is Map ? Map<String, dynamic>.from(raw) : const {};
+  }
+
+  bool hasAreaAccess(String area) {
+    if (!isCollaborator) return true;
+    if (collaboratorRole == 'admin') return true;
+    final value = collaboratorPermissions[area];
+    return value == true;
+  }
+
   bool get hasPremiumAccess {
     final user = currentUser;
     if (user == null) return false;
     final userPremium = user.userMetadata?['premium'];
     final appPremium = user.appMetadata['premium'];
-    return userPremium == true || appPremium == true;
+    final plan = (user.userMetadata?['plan'] ?? user.userMetadata?['plano'] ?? '')
+        .toString()
+        .toLowerCase();
+    return userPremium == true ||
+        appPremium == true ||
+        plan == 'premium' ||
+        plan == 'pro';
   }
 
   Future<void> signOut() => supabase.auth.signOut();
