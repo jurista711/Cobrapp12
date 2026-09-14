@@ -287,7 +287,7 @@ class _CompanySettingsPageState extends State<CompanySettingsPage> {
                     decoration: const InputDecoration(labelText: 'Tipo da multa', border: OutlineInputBorder()),
                     items: const [
                       DropdownMenuItem(value: 'percent', child: Text('Percentual (%)')),
-                      DropdownMenuItem(value: 'fixed', child: Text('Valor fixo (R$)')),
+                      DropdownMenuItem(value: 'fixed', child: Text('Valor fixo (R\$)')),
                     ],
                     onChanged: (value) => setState(() => lateFeeType = value ?? 'percent'),
                   ),
@@ -296,7 +296,7 @@ class _CompanySettingsPageState extends State<CompanySettingsPage> {
                     controller: lateFee,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     decoration: InputDecoration(
-                      labelText: lateFeeType == 'percent' ? 'Percentual da multa (%)' : 'Valor fixo da multa (R$)',
+                      labelText: lateFeeType == 'percent' ? 'Percentual da multa (%)' : 'Valor fixo da multa (R\$)',
                       border: const OutlineInputBorder(),
                     ),
                   ),
