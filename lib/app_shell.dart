@@ -5,6 +5,7 @@ import 'customers_page.dart';
 import 'data/auth_repository.dart';
 import 'legacy_app.dart' as legacy;
 import 'loans_page.dart';
+import 'payments_page.dart';
 import 'portfolio_page.dart';
 
 class HomeShell extends StatefulWidget {
@@ -28,7 +29,7 @@ class _HomeShellState extends State<HomeShell> {
       case 4:
         return const legacy.CashPage();
       case 5:
-        return const legacy.PaymentsPage();
+        return const PaymentsPage();
       case 6:
         return const legacy.ReceiptsPage();
       case 7:
