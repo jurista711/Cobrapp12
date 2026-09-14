@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/supabase_config.dart';
+import '../premium_service.dart';
 
 class AuthRepository {
   Stream<AuthState> get authState => supabase.auth.onAuthStateChange;
@@ -75,7 +76,8 @@ class AuthRepository {
     final plan = (user.userMetadata?['plan'] ?? user.userMetadata?['plano'] ?? '')
         .toString()
         .toLowerCase();
-    return userPremium == true ||
+    return PremiumService.runtimePremium ||
+        userPremium == true ||
         appPremium == true ||
         plan == 'premium' ||
         plan == 'pro';
