@@ -1,9 +1,10 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../core/supabase_config.dart';
+import 'auth_repository.dart';
 
 class CobrAppRepository {
   SupabaseClient get db => supabase;
-  String get uid { final user = db.auth.currentUser; if (user == null) { throw StateError('Usuário não autenticado.'); } return user.id; }
+  String get uid => AuthRepository().effectiveOwnerId;
 
   Future<List<Map<String,dynamic>>> customers() async => List<Map<String,dynamic>>.from(await db.from('cobrapp_customers').select().eq('user_id',uid).order('name'));
   Future<void> addCustomer({required String name,String? phone,String? document,String? address,String? notes}) async => db.from('cobrapp_customers').insert({'user_id':uid,'name':name,'phone':phone,'document':document,'address':address,'notes':notes});
